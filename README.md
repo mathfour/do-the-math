@@ -141,6 +141,7 @@ Full slice in motion — request → IR → SymPy derivation → graph:
     * [git](https://git-scm.com/)
     * [An Anthropic API key](https://console.anthropic.com/)
 
+    <br>
 
     <details>
     <summary>Do you need more help with these pre-requisites?</summary>
@@ -149,17 +150,22 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 
         <details>
         <summary>macOS / Linux</summary>
+
         On a Mac, press Command + Space, type "terminal", and press Enter. On most Linux desktops, press Ctrl + Alt + T, or open your applications and search for "Terminal".
+        
         </details>
 
         <details>
         <summary>Windows (PowerShell)</summary>
+
         Press the Windows key, type "PowerShell", and click Windows PowerShell.
+        
         </details>
 
     2. Install uv (this also manages Python for you)
         <details>
         <summary>macOS / Linux</summary>
+
         First install Homebrew — a package manager we'll use for this and the next couple of steps. Copy and paste this into your terminal and hit enter (it may ask for your computer password, and can take a few minutes):
 
         ```bash
