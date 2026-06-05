@@ -2,7 +2,7 @@
 
 A natural-language math agent. Describe what you want in plain English and Do the Math figures out the rest — starting with 2D graphing, and built from day one to grow into a full ecosystem of math agents (solving, factoring, calculus, proofs, and more).
 
-> 🚧 **Status: in active development — v1 (Phase 0).** This README is a living document and grows as the build progresses. The full, frozen build spec lives in [SPEC.md](SPEC.md); build decisions and progress are tracked in [NOTES.md](NOTES.md).
+> 🚧 **Status: in active development — v1.** The graphing vertical slice works end to end (see the [Demo](#demo) below); local-run docs are landing next. This README is a living document and grows as the build progresses. The full, frozen build spec lives in [SPEC.md](SPEC.md); build decisions and progress are tracked in [NOTES.md](NOTES.md).
 
 ---
 
@@ -97,7 +97,7 @@ Functions of the form `y = f(x)`:
 
 **Supported** — linear, quadratic, polynomial, trigonometric (sin/cos/tan), exponential, logarithmic.
 
-**Out of scope for v1** (returns a clear "not supported in v1" message, never a wrong graph) — implicit equations (e.g. `x² + y² = 25`), parametric curves, polar graphs, piecewise functions, inequalities / shaded regions.
+**Out of scope for v1** — circles and other implicit equations (e.g. `x² + y² = 25`), parametric curves, polar graphs, piecewise functions, inequalities / shaded regions. For these, the app responds with a friendly, plain-language note explaining it can only graph `y = f(x)` right now and pointing you to what it *can* do — never a wrong graph. Ask it "what can I graph?" and it'll tell you.
 
 ---
 

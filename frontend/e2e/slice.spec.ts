@@ -107,7 +107,7 @@ test('out-of-scope request shows a gentle note + what it can graph', async ({ pa
   await enterKeyAndOpenChat(page)
 
   await send(page, 'graph x^2 + y^2 = 25')
-  await expect(page.getByText(/i can only graph right now/i)).toBeVisible()
+  await expect(page.getByText(/i can only graph functions/i)).toBeVisible()
   await expect(page.getByText(/aren't supported in v1/i)).toBeVisible()
   await expect(page.getByText(/single-variable function/i)).toBeVisible()
 })

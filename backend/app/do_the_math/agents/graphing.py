@@ -16,7 +16,7 @@ from ..clarification import REQUIRED, check_required
 from ..describe import friendly_summary, summary_facts
 from ..errors import DerivationError, OutOfScopeError
 from ..graph_renderer import render
-from ..ir import Envelope, IntentWrapper
+from ..ir import Envelope, HelpRequest, IntentWrapper
 from ..math_engine import derive
 from .base import Request
 
@@ -63,6 +63,11 @@ class GraphingAgent:
                 "I couldn't make sense of that request. Could you rephrase it?",
                 reason="invalid_intent",
             )
+
+        # 2b. A help question ("what can I graph?") gets a friendly answer, not a
+        # graph. The capabilities text is rendered by the UI (static, no model).
+        if isinstance(intent, HelpRequest):
+            return Envelope.help("Here's what I can graph right now.")
 
         # 3. Derive + validate with SymPy (the source of mathematical truth).
         try:

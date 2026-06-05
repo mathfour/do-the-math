@@ -105,7 +105,7 @@ def test_collinear_three_points_rejected():
 def test_three_points_with_duplicates_get_clean_message():
     with pytest.raises(DerivationError) as exc:
         _derive({"kind": "parabola_three_points", "points": [[0, 0], [0, 0], [1, 1]]})
-    assert "distinct" in exc.value.message.lower()
+    assert "different" in exc.value.message.lower()
 
 
 def test_three_points_sharing_an_x_value_rejected():
@@ -118,7 +118,9 @@ def test_unsupported_implicit_raises_out_of_scope():
     with pytest.raises(OutOfScopeError) as exc:
         _derive({"kind": "unsupported", "reason": "implicit", "detail": "circle"})
     assert exc.value.reason == "implicit"
-    assert "implicit" in exc.value.message.lower()
+    # Plain-language message (no jargon like "implicit").
+    assert "circle" in exc.value.message.lower()
+    assert "implicit" not in exc.value.message.lower()
 
 
 def test_zero_leading_coefficient_quadratic_rejected():

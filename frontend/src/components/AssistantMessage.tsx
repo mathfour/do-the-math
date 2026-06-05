@@ -16,6 +16,18 @@ export function AssistantMessage({ envelope }: { envelope: Envelope }) {
     )
   }
 
+  if (envelope.type === 'help') {
+    return (
+      <div className="msg-help">
+        <p className="msg-scope-head">📈 Here's what I can graph:</p>
+        <Capabilities />
+        <p className="capabilities-roadmap">
+          More math is on the way in future versions — solving, factoring, calculus, and more.
+        </p>
+      </div>
+    )
+  }
+
   if (envelope.type === 'clarification') {
     const question = String(envelope.payload.question ?? envelope.explanation)
     return (
@@ -35,7 +47,7 @@ export function AssistantMessage({ envelope }: { envelope: Envelope }) {
     if (SCOPE_REASONS.has(reason)) {
       return (
         <div className="msg-scope">
-          <p className="msg-scope-head">Aw, man… I can only graph right now.</p>
+          <p className="msg-scope-head">Aw, man… I can only graph functions like y = f(x).</p>
           <p>{message}</p>
           <Capabilities />
         </div>

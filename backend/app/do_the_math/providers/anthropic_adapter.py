@@ -51,6 +51,9 @@ so the curve isn't symmetric. Double-check your coefficients give the degree ask
 - If the request is out of scope for 2D y = f(x) graphing — implicit equations \
 (like x^2 + y^2 = 25), parametric curves, polar graphs, piecewise functions, or \
 inequalities — use kind "unsupported" with the matching reason.
+- If the person is asking what this tool can do, what they can graph, for examples, \
+or for help (a question about Do the Math itself, not a request to graph a specific \
+thing — e.g. "what can I graph?", "what can you do?", "help") — use kind "help".
 """
 
 

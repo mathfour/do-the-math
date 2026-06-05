@@ -216,6 +216,10 @@
   color: var(--muted);
 }
 
+.message {
+  scroll-margin-top: 16px; /* breathing room when auto-scrolled to the top */
+}
+
 .message.user p {
   background: var(--accent-weak);
   border-radius: 12px 12px 2px 12px;
@@ -283,6 +287,12 @@
 .capabilities em {
   font-style: italic;
   color: var(--text);
+}
+
+.capabilities-roadmap {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 /* ---- Reasoning panel ---- */

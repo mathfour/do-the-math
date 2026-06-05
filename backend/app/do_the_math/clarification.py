@@ -27,6 +27,7 @@ REQUIRED: dict[str, list[str]] = {
     "parabola_vertex_point": ["vertex", "point"],
     "parabola_three_points": ["points"],
     "unsupported": ["reason"],
+    "help": [],
 }
 
 # Targeted question per (kind, field). Falls back to a generic prompt.

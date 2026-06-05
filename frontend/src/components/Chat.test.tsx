@@ -64,12 +64,28 @@ describe('Chat', () => {
     render(<Chat apiKey="sk-test" />)
 
     await sendMessage('graph x^2 + y^2 = 25')
-    expect(await screen.findByText(/i can only graph right now/i)).toBeInTheDocument()
+    expect(await screen.findByText(/i can only graph functions/i)).toBeInTheDocument()
     expect(screen.getByText(/implicit equations aren't supported/i)).toBeInTheDocument()
     // The capabilities note (what it CAN do) is shown.
     expect(screen.getByText(/single-variable function/i)).toBeInTheDocument()
     expect(screen.getByText('Lines')).toBeInTheDocument()
     // It's informational, not an error alert.
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('answers a help request with the capabilities', async () => {
+    mockPostChat.mockResolvedValue({
+      type: 'help',
+      explanation: "Here's what I can graph right now.",
+      payload: {},
+    })
+    render(<Chat apiKey="sk-test" />)
+
+    await sendMessage('what can I do?')
+    expect(await screen.findByText(/here's what i can graph/i)).toBeInTheDocument()
+    expect(screen.getByText(/single-variable function/i)).toBeInTheDocument()
+    expect(screen.getByText('Lines')).toBeInTheDocument()
+    // It's a friendly answer, not an error alert.
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 

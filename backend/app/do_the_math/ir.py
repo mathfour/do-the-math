@@ -141,6 +141,12 @@ class Unsupported(_IRModel):
     detail: str = ""
 
 
+class HelpRequest(_IRModel):
+    """The person is asking what the tool can do, not to graph something."""
+
+    kind: Literal["help"]
+
+
 # --------------------------------------------------------------------------- #
 # The union.
 # --------------------------------------------------------------------------- #
@@ -158,7 +164,8 @@ MathIntent = Annotated[
     | ParabolaVertexDirection
     | ParabolaVertexPoint
     | ParabolaThreePoints
-    | Unsupported,
+    | Unsupported
+    | HelpRequest,
     Field(discriminator="kind"),
 ]
 
@@ -173,7 +180,7 @@ class IntentWrapper(BaseModel):
 # Output envelope — every agent returns this shape.
 # --------------------------------------------------------------------------- #
 
-EnvelopeType = Literal["graph", "solution", "proof", "clarification", "error"]
+EnvelopeType = Literal["graph", "solution", "proof", "clarification", "error", "help"]
 
 
 class Envelope(BaseModel):
@@ -182,6 +189,7 @@ class Envelope(BaseModel):
     - ``graph``: ``{"figure": <plotly spec>, "equation": str, "ir": {...}}``
     - ``clarification``: ``{"question": str, "field": str}``
     - ``error``: ``{"message": str, "reason": str}``
+    - ``help``: ``{}`` — the UI renders the static capabilities answer.
     - ``solution`` / ``proof``: reserved for future agents.
     """
 
@@ -212,3 +220,7 @@ class Envelope(BaseModel):
             payload={"message": message, "reason": reason},
             explanation=message,
         )
+
+    @classmethod
+    def help(cls, explanation: str) -> Envelope:
+        return cls(type="help", payload={}, explanation=explanation)

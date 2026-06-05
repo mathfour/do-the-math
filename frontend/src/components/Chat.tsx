@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { postChat } from '../lib/api'
 import type { ChatTurn, Envelope } from '../types'
 import { AssistantMessage } from './AssistantMessage'
@@ -27,6 +27,15 @@ export function Chat({ apiKey }: { apiKey: string }) {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const nextId = useRef(0)
+  // Id of the newest user message — scrolled to the top of the view so the new
+  // prompt and its result come into view (it stays pinned as the result loads).
+  const scrollTargetId = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (scrollTargetId.current == null) return
+    const el = document.querySelector<HTMLElement>(`[data-msg-id="${scrollTargetId.current}"]`)
+    el?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+  }, [messages, loading])
 
   async function send(event?: React.FormEvent) {
     event?.preventDefault()
@@ -34,7 +43,9 @@ export function Chat({ apiKey }: { apiKey: string }) {
     if (!text || loading) return
 
     const history = toHistory(messages)
-    setMessages((prev) => [...prev, { id: nextId.current++, role: 'user', text }])
+    const userId = nextId.current++
+    scrollTargetId.current = userId
+    setMessages((prev) => [...prev, { id: userId, role: 'user', text }])
     setInput('')
     setLoading(true)
     try {
@@ -58,7 +69,7 @@ export function Chat({ apiKey }: { apiKey: string }) {
           </p>
         )}
         {messages.map((m) => (
-          <div key={m.id} className={`message ${m.role}`}>
+          <div key={m.id} data-msg-id={m.id} className={`message ${m.role}`}>
             {m.role === 'user' ? <p>{m.text}</p> : <AssistantMessage envelope={m.envelope} />}
           </div>
         ))}

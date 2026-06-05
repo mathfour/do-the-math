@@ -1,7 +1,7 @@
 // Mirrors the backend output Envelope (see backend/app/do_the_math/ir.py).
 // The frontend renders uniformly off `type`; future agent outputs slot in here.
 
-export type EnvelopeType = 'graph' | 'solution' | 'proof' | 'clarification' | 'error'
+export type EnvelopeType = 'graph' | 'solution' | 'proof' | 'clarification' | 'error' | 'help'
 
 export interface PlotlyFigure {
   data: unknown[]

@@ -56,6 +56,13 @@ def test_underspecified_returns_clarification():
     assert env.payload["field"] == "vertex"
 
 
+def test_help_request_returns_help_envelope():
+    # "What can I graph?" is a help question, not a graph request.
+    env = _router({"kind": "help"}).handle("what can I graph?")
+    assert env.type == "help"
+    assert env.explanation
+
+
 def test_unsupported_returns_error():
     env = _router({"kind": "unsupported", "reason": "implicit", "detail": "circle"}).handle("p")
     assert env.type == "error"

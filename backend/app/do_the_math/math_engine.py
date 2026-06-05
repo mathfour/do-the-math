@@ -34,12 +34,24 @@ from .ir import (
 x = sp.Symbol("x", real=True)
 
 _UNSUPPORTED_MESSAGE = {
-    "implicit": "Implicit equations (like x**2 + y**2 = 25) aren't supported in v1.",
-    "parametric": "Parametric curves aren't supported in v1.",
-    "polar": "Polar graphs aren't supported in v1.",
-    "piecewise": "Piecewise functions aren't supported in v1.",
-    "inequality": "Inequalities and shaded regions aren't supported in v1.",
-    "not_a_function": "That isn't a function of the form y = f(x), so it can't be graphed in v1.",
+    "implicit": (
+        "Circles and similar shapes — where y isn't written by itself, "
+        "like x² + y² = 25 — aren't something I can graph yet."
+    ),
+    "parametric": (
+        "Curves traced by a moving point — where x and y each follow their own "
+        "recipe — aren't something I can graph yet."
+    ),
+    "polar": "Spiral and flower-shaped 'polar' graphs aren't something I can graph yet.",
+    "piecewise": (
+        'Functions that switch rules over different stretches of x ("piecewise" '
+        "functions) aren't something I can graph yet."
+    ),
+    "inequality": "Inequalities and shaded regions aren't something I can graph yet.",
+    "not_a_function": (
+        "That isn't a function — to graph it this way I need exactly one y for each "
+        "x — so I can't draw it yet."
+    ),
     "unknown": (
         'Future versions of "Do the Math" will be able to do more robust math things. '
         "Stay tuned!"
@@ -99,9 +111,9 @@ def _resolve_base(base) -> sp.Expr:
         return sp.E
     b = _num(base)
     if b.is_positive is False or b == 0:
-        raise DerivationError("Logarithm/exponential base must be positive.")
+        raise DerivationError("A log or exponential needs a positive base.")
     if b == 1:
-        raise DerivationError("Logarithm/exponential base cannot be 1.")
+        raise DerivationError("A log or exponential can't use a base of 1.")
     return b
 
 
@@ -117,14 +129,14 @@ def _linear_direct(ir: LinearDirect) -> sp.Expr:
 def _quadratic_vertex(ir: QuadraticVertex) -> sp.Expr:
     a = _num(ir.a)
     if a == 0:
-        raise DerivationError("A quadratic needs a nonzero leading coefficient (a != 0).")
+        raise DerivationError("With a flat (zero) leading number that's a line, not a parabola.")
     return a * (x - _num(ir.h)) ** 2 + _num(ir.k)
 
 
 def _quadratic_standard(ir: QuadraticStandard) -> sp.Expr:
     a = _num(ir.a)
     if a == 0:
-        raise DerivationError("A quadratic needs a nonzero leading coefficient (a != 0).")
+        raise DerivationError("With a flat (zero) leading number that's a line, not a parabola.")
     return a * x**2 + _num(ir.b) * x + _num(ir.c)
 
 
@@ -167,8 +179,8 @@ def _line_two_points(ir: LineTwoPoints) -> sp.Expr:
     if x1 == x2:
         raise OutOfScopeError(
             "not_a_function",
-            "A vertical line (x = constant) isn't a function y = f(x), so it can't "
-            "be graphed in v1.",
+            "A vertical line (like x = 3) isn't a function — it has many y-values at "
+            "a single x — so I can't graph it yet.",
         )
     slope = (y2 - y1) / (x2 - x1)
     intercept = y1 - slope * x1
@@ -184,7 +196,7 @@ def _parabola_vertex_direction(ir: ParabolaVertexDirection) -> sp.Expr:
     h, k = _pt(ir.vertex)
     magnitude = sp.Integer(1) if ir.a_magnitude is None else _num(ir.a_magnitude)
     if magnitude <= 0:
-        raise DerivationError("Parabola stretch magnitude must be positive.")
+        raise DerivationError("The parabola's stretch needs to be a positive amount.")
     a = magnitude if ir.direction == "up" else -magnitude
     return a * (x - h) ** 2 + k
 
@@ -194,28 +206,28 @@ def _parabola_vertex_point(ir: ParabolaVertexPoint) -> sp.Expr:
     px, py = _pt(ir.point)
     if px == h:
         raise DerivationError(
-            "The extra point lies on the parabola's axis of symmetry, so the "
-            "stretch can't be determined. Give a point with a different x-value."
+            "That extra point sits straight above or below the vertex, so I can't tell "
+            "how wide the parabola is. Try a point with a different x."
         )
     a_sym = sp.Symbol("a")
     solutions = sp.solve(sp.Eq(py, a_sym * (px - h) ** 2 + k), a_sym)
     if not solutions:
-        raise DerivationError("No parabola fits that vertex and point.")
+        raise DerivationError("No parabola passes through both that vertex and that point.")
     a = solutions[0]
     if a == 0:
-        raise DerivationError("That vertex and point describe a horizontal line, not a parabola.")
+        raise DerivationError("That vertex and point line up flat — that's a line, not a parabola.")
     return a * (x - h) ** 2 + k
 
 
 def _parabola_three_points(ir: ParabolaThreePoints) -> sp.Expr:
     pts = [_pt(p) for p in ir.points]
     if len(set(pts)) < 3:
-        raise DerivationError("Please give three distinct points for the parabola.")
+        raise DerivationError("Please give three different points for the parabola.")
     # Two points sharing an x-value can't both lie on a function y = f(x).
     if len({px for px, _ in pts}) < 3:
         raise OutOfScopeError(
             "not_a_function",
-            "Two of those points share an x-value, so no function y = f(x) passes "
+            "Two of those points sit at the same x, so no single curve can pass "
             "through all three.",
         )
     a_s, b_s, c_s = sp.symbols("a b c")
@@ -224,13 +236,13 @@ def _parabola_three_points(ir: ParabolaThreePoints) -> sp.Expr:
     if not solution:
         raise OutOfScopeError(
             "not_a_function",
-            "Those three points don't define a parabola (they may be collinear or repeated).",
+            "Those three points don't make a parabola (they line up straight, or repeat).",
         )
     a, b, c = next(iter(solution))
     if a == 0:
         raise OutOfScopeError(
             "not_a_function",
-            "Those three points are collinear — that's a line, not a parabola.",
+            "Those three points line up straight — that's a line, not a parabola.",
         )
     return a * x**2 + b * x + c
 
