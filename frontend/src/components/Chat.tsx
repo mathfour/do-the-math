@@ -28,8 +28,8 @@ export function Chat({ apiKey }: { apiKey: string }) {
   const [loading, setLoading] = useState(false)
   const nextId = useRef(0)
 
-  async function send(event: React.FormEvent) {
-    event.preventDefault()
+  async function send(event?: React.FormEvent) {
+    event?.preventDefault()
     const text = input.trim()
     if (!text || loading) return
 
@@ -65,11 +65,18 @@ export function Chat({ apiKey }: { apiKey: string }) {
       </div>
 
       <form className="composer" onSubmit={send}>
-        <input
-          type="text"
+        <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Describe a graph…"
+          onKeyDown={(e) => {
+            // Enter sends; Shift+Enter inserts a new line (like Claude / ChatGPT).
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              void send()
+            }
+          }}
+          rows={3}
+          placeholder="Describe a graph…  (Enter to send, Shift+Enter for a new line)"
           aria-label="Describe a graph"
           disabled={loading}
         />

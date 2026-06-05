@@ -101,12 +101,21 @@
 }
 
 .key-field input,
-.composer input {
+.composer input,
+.composer textarea {
   background: var(--panel-2);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text);
   padding: 10px 12px;
+}
+
+.composer textarea {
+  font-family: inherit;
+  line-height: 1.4;
+  min-height: 4.5em; /* ~3 lines */
+  max-height: 12em;
+  resize: vertical;
 }
 
 .key-form button,
@@ -229,11 +238,14 @@
 /* ---- Composer ---- */
 .composer {
   display: flex;
+  align-items: flex-end; /* keep Send aligned to the bottom of the textarea */
   gap: 8px;
   border-top: 1px solid var(--border);
   padding-top: 12px;
 }
 
-.composer input {
+.composer input,
+.composer textarea {
   flex: 1;
+  min-width: 0; /* allow the field to shrink/grow to fill the row */
 }
