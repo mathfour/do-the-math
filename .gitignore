@@ -41,3 +41,8 @@ playwright/.cache/
 
 # Harness transient state
 .claude/scheduled_tasks.lock
+
+# Local screen recordings (convert to demo/*.gif, do not commit the raw video)
+*.mov
+*.mp4
+*.m4v
