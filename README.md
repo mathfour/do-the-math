@@ -115,7 +115,19 @@ A simple browser chat:
 2. **Chat** — type a request in plain English; the graph comes back inline.
 3. **Reasoning panel** — each result shows its work: the **Math Intent (IR)** the model produced and the **equation SymPy derived** from it, so you can see the architecture in motion rather than just input → graph.
 
-> Screenshots and a demo recording land in Phase 3 (see `/demo`).
+---
+
+## Demo
+
+![Do the Math — ready state](demo/ready-state.png)
+
+![A graphing result with the reasoning panel expanded](demo/graph-result.png)
+
+Full slice in motion — request → IR → SymPy derivation → graph:
+
+![Demo recording](demo/slice.gif)
+
+> Artifacts are captured by the author with the app running. See [demo/README.md](demo/README.md) for the capture guide and recommended prompts.
 
 ---
 

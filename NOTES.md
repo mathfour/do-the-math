@@ -36,7 +36,11 @@ Three docs (decided 2026-06-05):
 
 ## Phase status
 
-- **Phase 2 — Front end & chat UI:** _complete (pending Clarice review)._
+- **Phase 3 — Vertical slice complete & demo capture:** _in progress._
+  - **Playwright E2E** built against a mocked `/chat` (route interception + CORS preflight handling, no live billing): happy path (key → request → graph, then expand reasoning panel → IR + equation), clarification loop (question → answer → graph), out-of-scope error path. 4 E2E specs total (incl. the key-screen smoke).
+  - **Demo:** `/demo/README.md` capture guide (exact prompts + filenames); main README has a Demo section referencing `demo/{ready-state,graph-result}.png` + `demo/slice.gif`. **Author captures these manually** (decision 2026-06-05); **LLM result line kept OFF** for captures.
+  - The Phase-1-deferred **live API test is satisfied** — the full slice runs live in the browser.
+- **Phase 2 — Front end & chat UI:** _complete (Clarice-approved at `fd87243`; the live-testing polish that landed after — `aa82647` etc. — folds into the Phase 3 review per Clarice's note)._
   - First-run key screen (provider selector: Anthropic active; OpenAI/Azure/Gemini disabled "Coming soon"; future-providers note; key → `localStorage`), chat with message-list + composer, envelope rendering (graph via Plotly + reasoning panel showing IR + derived equation; clarification; graceful error), `App` key-gate + "Change key".
   - `lib/`: `types.ts` (Envelope mirror), `storage.ts` (localStorage key), `api.ts` (`POST /chat` with `X-Anthropic-Key` + history; non-200/network → error envelope so the UI never special-cases fetch failures).
   - **12 frontend unit tests** (key screen renders/captures/stores key + only Anthropic selectable; chat renders turns; graph/clarification/error from sample envelopes; history sent on next turn). Playwright smoke updated to the new key screen. Stock Vite `App.tsx` + smoke replaced (Clarice carry-forward cleared).
