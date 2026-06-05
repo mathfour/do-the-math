@@ -40,7 +40,10 @@ _UNSUPPORTED_MESSAGE = {
     "piecewise": "Piecewise functions aren't supported in v1.",
     "inequality": "Inequalities and shaded regions aren't supported in v1.",
     "not_a_function": "That isn't a function of the form y = f(x), so it can't be graphed in v1.",
-    "unknown": "That request isn't something Do the Math supports in v1.",
+    "unknown": (
+        'Future versions of "Do the Math" will be able to do more robust math things. '
+        "Stay tuned!"
+    ),
 }
 
 

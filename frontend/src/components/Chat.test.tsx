@@ -55,7 +55,7 @@ describe('Chat', () => {
     expect(await screen.findByText(/where is the vertex of the parabola/i)).toBeInTheDocument()
   })
 
-  it('renders an error state without crashing', async () => {
+  it('renders an out-of-scope reason gently, with what it can graph', async () => {
     mockPostChat.mockResolvedValue({
       type: 'error',
       explanation: 'not supported',
@@ -64,8 +64,26 @@ describe('Chat', () => {
     render(<Chat apiKey="sk-test" />)
 
     await sendMessage('graph x^2 + y^2 = 25')
+    expect(await screen.findByText(/i can only graph right now/i)).toBeInTheDocument()
+    expect(screen.getByText(/implicit equations aren't supported/i)).toBeInTheDocument()
+    // The capabilities note (what it CAN do) is shown.
+    expect(screen.getByText(/single-variable function/i)).toBeInTheDocument()
+    expect(screen.getByText('Lines')).toBeInTheDocument()
+    // It's informational, not an error alert.
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('renders a real failure (bad key) as an alert', async () => {
+    mockPostChat.mockResolvedValue({
+      type: 'error',
+      explanation: 'no key',
+      payload: { message: 'No Anthropic API key provided.', reason: 'missing_api_key' },
+    })
+    render(<Chat apiKey="sk-test" />)
+
+    await sendMessage('a parabola')
     const alert = await screen.findByRole('alert')
-    expect(alert).toHaveTextContent(/implicit equations aren't supported/i)
+    expect(alert).toHaveTextContent(/no anthropic api key/i)
   })
 
   it('sends prior turns as history on the next message', async () => {

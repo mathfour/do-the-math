@@ -93,7 +93,7 @@ test('clarification loop: question -> answer -> graph', async ({ page }) => {
   await expect(page.getByRole('img', { name: /graph/i })).toBeVisible()
 })
 
-test('error path: out-of-scope request shows a clear message', async ({ page }) => {
+test('out-of-scope request shows a gentle note + what it can graph', async ({ page }) => {
   await mockChat(page, [
     {
       type: 'error',
@@ -107,7 +107,7 @@ test('error path: out-of-scope request shows a clear message', async ({ page }) 
   await enterKeyAndOpenChat(page)
 
   await send(page, 'graph x^2 + y^2 = 25')
-  const alert = page.getByRole('alert')
-  await expect(alert).toBeVisible()
-  await expect(alert).toContainText(/aren't supported in v1/i)
+  await expect(page.getByText(/i can only graph right now/i)).toBeVisible()
+  await expect(page.getByText(/aren't supported in v1/i)).toBeVisible()
+  await expect(page.getByText(/single-variable function/i)).toBeVisible()
 })

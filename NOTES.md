@@ -33,13 +33,16 @@ Three docs (decided 2026-06-05):
 - **`unsupported` is a first-class IR kind** — scope rejection is deterministic, not a force-fit. Backed by engine-level guards (reject leftover symbols, relationals, Piecewise) as defense in depth.
 - **Clarification is deterministic** — driven by a required-field table per IR kind, checked *before* strict Pydantic construction. Returns the first missing field as one targeted question. No LLM confidence floats.
 - **API key flow:** UI → browser `localStorage` → `X-Anthropic-Key` header → backend → Anthropic. Backend `.env` (`ANTHROPIC_API_KEY`) is a dev/live fallback. Key is never committed and never sent anywhere except Anthropic.
+- **LLM role boundary (decision, re: SPEC §10):** with `DTM_LLM_SUMMARIES=1` the LLM also *phrases* SymPy-verified facts (equation passed verbatim; it never invents/changes numbers), so the literal "the LLM only produces the IR" is broader than at launch. The invariant we actually hold and will assert at acceptance is **"the LLM is never the source of mathematical truth"** — SymPy is. Summaries stay **off** by default (and for the trust-critical demo).
 
 ## Phase status
 
-- **Phase 3 — Vertical slice complete & demo capture:** _in progress._
+- **Phase 3 — Vertical slice complete & demo capture:** _complete (Clarice-approved → Phase 4)._
   - **Playwright E2E** built against a mocked `/chat` (route interception + CORS preflight handling, no live billing): happy path (key → request → graph, then expand reasoning panel → IR + equation), clarification loop (question → answer → graph), out-of-scope error path. 4 E2E specs total (incl. the key-screen smoke).
   - **Demo:** `/demo/README.md` capture guide (exact prompts + filenames); main README has a Demo section referencing `demo/{ready-state,graph-result}.png` + `demo/slice.gif`. **Author captures these manually** (decision 2026-06-05); **LLM result line kept OFF** for captures.
   - The Phase-1-deferred **live API test is satisfied** — the full slice runs live in the browser.
+  - **Friendlier out-of-scope UX:** scope/help responses (out-of-scope shapes, or a request we can't graph) render as a gentle info note ("Aw, man… I can only graph right now." + what we *can* graph), reason-aware in the frontend (real failures — bad key, server down — stay red alerts). Pure client-side branch on `payload.reason` → **no extra tokens**. The `unknown` message is now "Future versions of "Do the Math" will be able to do more robust math things. Stay tuned!".
+  - **Turning-point count fix (Clarice #1):** `describe._num_turning_points` now counts **sign changes of f′** (odd-multiplicity roots), not distinct roots — so `y=x**3`/`y=x**5` correctly report **0** turns (inflection), `y=x**4` reports 1. Regression tests added. (The renderer still anchors its window on all distinct critical points — only the note needed fixing.)
   - **MathFour branding (with the author):** `mathfour.com` logo + favicon (`public/`), "Brought to You By" credit centered on the key screen, full-width top bar on the graphing page (logo flush-left, baseline-aligned with "Do the Math" + "brought to you by"; small CSS nudge to sit the lockup on the text baseline), darker `--muted` for contrast, larger header title, multi-line composer, and a fuller empty-state hint. Removed leftover Vite scaffold SVGs.
 - **Phase 2 — Front end & chat UI:** _complete (Clarice-approved at `fd87243`; the live-testing polish that landed after — `aa82647` etc. — folds into the Phase 3 review per Clarice's note)._
   - First-run key screen (provider selector: Anthropic active; OpenAI/Azure/Gemini disabled "Coming soon"; future-providers note; key → `localStorage`), chat with message-list + composer, envelope rendering (graph via Plotly + reasoning panel showing IR + derived equation; clarification; graceful error), `App` key-gate + "Change key".
@@ -83,8 +86,14 @@ Three docs (decided 2026-06-05):
 - **Live API check (Phase 2/3):** run `backend/scripts/live_check.py` (or the equivalent through the UI) with a real Anthropic key once the chat UI exists — the first real end-to-end test, watched in the browser. Deferred from Phase 1 by human decision.
 - **Coverage gate:** _done in Phase 1_ — `--cov-fail-under=80` lives in `pyproject` `addopts`, enforced by local `pytest` and CI alike (currently 93%).
 - **Scaffold placeholders:** `frontend/src/App.tsx` and both smoke tests (`App.test.tsx`, `e2e/smoke.spec.ts`) are stock Vite boilerplate, intentionally. They get **replaced in Phase 2 (UI) / Phase 3 (real E2E)** — not carried forward.
+- **Keep `write_summary` optional (Clarice Phase 3 #3):** `GraphingAgent` uses `request.provider.write_summary` (gated by `LLM_SUMMARIES_ENABLED`). When a second agent/provider lands, treat that capability as optional on the `ProviderAdapter` so a provider without it still works.
 
 ## Clarice review log
+
+- **Phase 3 — APPROVED** (→ Phase 4). Demo-ready: live happy path + mocked E2E on all three paths, good demo artifacts, math-truth boundary intact. Both Phase 2 follow-ups landed.
+  1. **Turning-point count** → fixed: count sign changes of f′ (odd-multiplicity roots), not distinct roots; `x**3`/`x**5` → 0, `x**4` → 1; regression tests added.
+  2. **Broadened LLM role** → recorded as a decision above; at acceptance phrase §10 as "the LLM is never the source of mathematical truth"; summaries stay off for the demo.
+  3. **`write_summary` dependency** → noted in "To carry into later phases"; keep optional for the future second agent/provider.
 
 - **Phase 2 — APPROVED** (proceed to Phase 3), reviewed at committed state `fd87243` in an isolated worktree (live CSS work was deliberately out of her scope; she'll pick it up at Phase 3 review). Three non-blocking follow-ups:
   1. **Delete dead scaffold assets** (`src/assets/{hero.png,react.svg,vite.svg}`) → done (`git rm`).

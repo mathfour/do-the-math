@@ -211,12 +211,27 @@ def _safe_degree(expr: sp.Expr) -> int | None:
 
 
 def _num_turning_points(expr: sp.Expr) -> int:
-    # Turning points = where the derivative is zero. Count *distinct* real roots
-    # (a repeated root is a horizontal inflection, not a turn). real_solutions
-    # stays correct for cubics+ where solve() returns roots in complex form.
-    roots = real_solutions(sp.diff(expr, x))
-    distinct: list[float] = []
-    for r in roots:
-        if not any(abs(r - d) < 1e-9 for d in distinct):
-            distinct.append(r)
-    return len(distinct)
+    # A turning point is where f' *changes sign* — not merely where f' = 0. A
+    # repeated (even-multiplicity) root, e.g. x=0 for y=x**3 (f' = 3x**2), is a
+    # horizontal inflection, not a turn. So sample f' in each interval around its
+    # distinct critical points and count sign flips (this ignores even roots).
+    fprime = sp.diff(expr, x)
+    crit: list[float] = []
+    for r in real_solutions(fprime):
+        if not any(abs(r - c) < 1e-9 for c in crit):
+            crit.append(r)
+    if not crit:
+        return 0
+
+    crit.sort()
+    samples = [crit[0] - 1.0]
+    samples += [(a + b) / 2.0 for a, b in zip(crit, crit[1:], strict=False)]
+    samples.append(crit[-1] + 1.0)
+
+    signs: list[int] = []
+    for s in samples:
+        value = fprime.subs(x, sp.Float(s))
+        if value.is_zero:
+            continue
+        signs.append(1 if value > 0 else -1)
+    return sum(1 for a, b in zip(signs, signs[1:], strict=False) if a != b)

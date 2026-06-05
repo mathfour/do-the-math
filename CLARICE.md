@@ -8,6 +8,84 @@ Verdict legend: ✅ approved to proceed · 🟡 approved with follow-ups · 🔴
 
 ---
 
+## Phase 3 — Vertical slice complete & demo capture
+
+**Verdict: ✅ approved to proceed to Phase 4 — with one correctness fix I'd like done first
+(non-blocking for sign-off, but fix before anyone demos free-form cubics).** (reviewed 2026-06-05,
+commit `614f543`)
+
+The full slice is real and demonstrable: live in the browser, plus mocked Playwright E2E covering
+all three paths. The demo deliverables are genuinely good — the `graph-result.png` shows request →
+conversational line → interactive graph → expanded IR + SymPy equation in one frame, which is
+exactly the §9 narrative. Phase 3 also went beyond "capture screenshots" and added a friendly
+result-line layer; that's mostly excellent, with one math bug I caught (below).
+
+### What I verified (re-run at HEAD)
+- **Backend: 81 tests pass, 92% coverage** (gate 80%). **Frontend: 12 unit + 4 E2E pass**;
+  `tsc`/`eslint`/`prettier` clean.
+- Demo artifacts exist and are wired from the README: `demo/{ready-state,graph-result}.png`,
+  `demo/slice.gif` (1.45 MB), plus a `demo/README.md` capture guide with exact prompts. `.claude/`
+  has nothing committed.
+- **The math-truth boundary holds.** The new `describe.py` line is built from SymPy facts; the
+  optional LLM-phrased summary (`write_summary`) is **OFF by default** (`DTM_LLM_SUMMARIES`, defaults
+  to 0), passes the equation through verbatim, is told never to change a number, and falls back to the
+  deterministic line on any failure. The graph title and reasoning-panel equation are always rendered
+  deterministically. Demo captures used the deterministic line — consistent.
+
+### Against the SPEC Phase 3 checklist
+- [x] Full happy path end to end (request → IR → SymPy → Plotly in React), confirmed by the
+      `slice.spec.ts` happy-path E2E and the live capture.
+- [x] Demo deliverables: ready-state screenshot, successful-graph screenshot (with IR + equation
+      visible), and a motion GIF of the full slice.
+- [x] Stretch §9.1 examples — **exceeded**: line-through-two-points and richer polynomials are in the
+      demo prompt set, plus feature-aware graph windowing and shape-aware summaries.
+
+### Earlier follow-ups — resolved
+- [x] Phase 2 #1 (delete dead scaffold assets) — `src/assets/` Vite SVGs removed.
+- [x] Phase 2 #2 (`finally` around `setLoading`) — `Chat.send` now uses `try/finally`.
+- [x] Phase 1 deferred **live-API check** — satisfied; the slice runs live in the browser.
+- Phase 2 #3 (tighten payload typing) was optional and not taken — fine, not pressing.
+
+### Follow-ups
+
+1. **🔴→fix soon — turning-point count is wrong for monotonic polynomials.**
+   `describe._num_turning_points` counts *distinct real roots* of f′, but a turning point requires f′
+   to **change sign** (a root of *odd* multiplicity). So `y = x³` reports *"degree-3 curve with 1
+   turning point"* and `y = x⁵` reports 1 — both have **zero** (x=0 is a horizontal inflection). I
+   reproduced both at HEAD. The code's own comment ("a repeated root is a horizontal inflection, not a
+   turn") describes the right rule, but dedup-by-distinct-*value* doesn't detect multiplicity, so it
+   isn't actually implemented. The tests only cover genuine-turn cases (cubic→2, quartic→3), so it's
+   uncaught. **Scope:** only the friendly prose is wrong — the graph and the equation are correct, and
+   the canonical demo prompts (parabola, line, degree-5 with 4 distinct roots) all report correctly —
+   so this does **not** block Phase 3 sign-off. But "x cubed has one turning point" is exactly the kind
+   of false math claim this project exists to never make, and it's reachable by a one-word prompt.
+   Fix: count odd-multiplicity real roots of f′ (e.g. `sp.real_roots` with multiplicities, or detect
+   sign changes of f′ between consecutive critical points) and add a monotonic-cubic / `x⁵` regression
+   test. The renderer's windowing can keep using all distinct critical points as anchors — only the
+   *note* needs the multiplicity rule.
+
+2. **🟡 Scope expansion + the LLM's role — be deliberate at §10 acceptance.** Phase 3 grew a real
+   feature surface (deterministic summaries, optional LLM phrasing, feature-windowing, polynomial-
+   wiggle prompt guidance) beyond the literal "demo capture" ask. It's well-built and in service of
+   the demo, so I'm not docking it — but note the SPEC §10 bullet *"the LLM only produces the IR"* is
+   now technically broader: with summaries enabled the LLM also phrases (SymPy-verified) facts. The
+   mitigations are sound, so at final acceptance phrase that criterion as **"the LLM is never the
+   source of mathematical truth"** (which holds) and keep summaries **off** for any trust-critical
+   demo (already the practice). Worth a one-line note in `NOTES.md` so the broadened LLM role is a
+   recorded decision, not drift.
+
+3. **🟡 The agent↔provider seam widened.** `GraphingAgent` now reaches back into the provider for
+   `write_summary`, and `Request` carries the provider. Reasonable and gated, but it means the agent
+   now depends on the provider exposing a phrasing method (documented in the `ProviderAdapter`
+   Protocol — good). Keep an eye on this when the second agent/provider lands so the summary capability
+   stays optional, not assumed.
+
+### Carried-forward (tracking)
+- SPEC §8/§10 PR-merge boxes remain **WAIVED** (direct-to-`main`) — mark waived, not checked.
+- `NOTES.md` still lists Phase 3 as *"in progress"* — flip to complete once #1 is addressed.
+
+---
+
 ## Phase 2 — Front end & chat UI
 
 **Verdict: ✅ approved to proceed to Phase 3.** (reviewed 2026-06-05, commit `fd87243`)

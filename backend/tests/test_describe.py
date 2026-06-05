@@ -46,6 +46,23 @@ def test_cubic_summary_reports_degree_and_turning_points():
     assert "degree-3 curve with 2 turning points" in s
 
 
+def test_monotonic_powers_have_no_turning_points():
+    # f' has an even-multiplicity root at x=0 (an inflection, not a turn).
+    assert "degree-3 curve with 0 turning points" in _summary(
+        {"kind": "polynomial", "coefficients": [1, 0, 0, 0]}  # y = x**3
+    )
+    assert "degree-5 curve with 0 turning points" in _summary(
+        {"kind": "polynomial", "coefficients": [1, 0, 0, 0, 0, 0]}  # y = x**5
+    )
+
+
+def test_even_power_has_one_turning_point():
+    # y = x**4: f' = 4x**3 has an odd-multiplicity root at 0 -> a real turn (min).
+    assert "degree-4 curve with 1 turning point" in _summary(
+        {"kind": "polynomial", "coefficients": [1, 0, 0, 0, 0]}
+    )
+
+
 def test_quartic_turning_points_counted_in_casus_irreducibilis():
     # y = x^4 - 2x^3 - 5x^2 + 4x + 3: derivative is a cubic with three irrational
     # real roots that solve() returns in complex form. The count must still be 3.
