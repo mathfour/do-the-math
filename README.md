@@ -93,6 +93,17 @@ User (browser chat UI)
 
 ---
 
+## Tech stack
+
+- **Backend — Python 3.12** (managed by [uv](https://docs.astral.sh/uv/)): [FastAPI](https://fastapi.tiangolo.com/) + Uvicorn for the API, **[SymPy](https://www.sympy.org/)** as the math engine (the source of mathematical truth), NumPy for plot sampling, **Pydantic v2** for the typed Math Intent (IR) and response envelopes, and the **[Anthropic SDK](https://docs.anthropic.com/)** (Claude) for English → IR via tool-use.
+- **Frontend — [Vite](https://vite.dev/) + [React 19](https://react.dev/) + TypeScript**: [Plotly.js](https://plotly.com/javascript/) for the interactive 2D graphs; the API key lives in the browser's `localStorage` (bring your own Anthropic key).
+- **AI — Anthropic only in v1, model-agnostic by design:** a provider-adapter interface means OpenAI / Azure / Gemini are later *additions*, not rewrites. The LLM only produces the IR — **SymPy owns all the math.**
+- **Quality & CI:** Ruff + Black + pytest (backend); ESLint + Prettier + Vitest + Playwright (frontend); GitHub Actions runs every suite on each push.
+
+> The *why* behind these choices — especially the Math Intent layer that keeps the LLM out of the math — is in the [Architecture](#architecture) section above and in [NOTES.md](NOTES.md).
+
+---
+
 ## What's graphable in v1
 
 Functions of the form `y = f(x)`:
