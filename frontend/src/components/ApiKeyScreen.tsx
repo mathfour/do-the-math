@@ -55,10 +55,11 @@ export function ApiKeyScreen({ onSubmit }: { onSubmit: (key: string) => void }) 
           <span>Anthropic API key</span>
           <input
             type="password"
+            name="anthropic-api-key"
             value={key}
             onChange={(e) => setKey(e.target.value)}
             placeholder="sk-ant-..."
-            autoComplete="off"
+            autoComplete="current-password"
             aria-label="Anthropic API key"
           />
         </label>
