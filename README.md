@@ -141,6 +141,7 @@ Full slice in motion — request → IR → SymPy derivation → graph:
     * [git](https://git-scm.com/)
     * [An Anthropic API key](https://console.anthropic.com/)
 
+
     <details>
     <summary>Do you need more help with these pre-requisites?</summary>
 
@@ -165,7 +166,7 @@ Full slice in motion — request → IR → SymPy derivation → graph:
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         ```
 
-        Then install uv:
+        Then install uv. Copy and paste this into your terminal and hit enter:
 
         ```bash
         brew install uv
@@ -188,6 +189,8 @@ Full slice in motion — request → IR → SymPy derivation → graph:
         <details>
         <summary>macOS / Linux</summary>
 
+        Copy and paste this into your terminal and hit enter:
+
         ```bash
         brew install node
         ```
@@ -195,6 +198,8 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 
         <details>
         <summary>Windows (PowerShell)</summary>
+
+        Copy and paste this into your terminal and hit enter:
 
         ```bash
         winget install OpenJS.NodeJS.LTS
@@ -205,7 +210,8 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 
         <details>
         <summary>macOS / Linux</summary>
-        If you're running a Mac, you might already have this, but it won't hurt to run this.
+
+        If you're running a Mac, you might already have this, but it won't hurt to do this. Copy and paste this into your terminal and hit enter:
 
         ```bash
         brew install git
@@ -214,6 +220,8 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 
         <details>
         <summary>Windows (PowerShell)</summary>
+
+        Copy and paste this into your terminal and hit enter:
 
         ```bash
         winget install Git.Git
@@ -236,17 +244,17 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 
     6. Get an Anthropic API key
         1. Sign in at [console.anthropic.com](https://console.anthropic.com/)
-        2. If your "credit balance" is zero, click on add funds and add $5 of credits. (Be careful--after you add credits, it will prompt you to automatically add credits when you go low. A safe bet is to click "Skip for now".) The API is pay-as-you-go from a prepaid balance and seems to be about $0.01 per graph. For $5, you should get at least 500 graphs (btw, that's math!).
+        2. If your "credit balance" is zero, click on add funds and add $5 of credits. (Be careful---after you add credits, it will prompt you to automatically add credits when you go low. A safe bet is to click "Skip for now".) The API is pay-as-you-go from a prepaid balance and seems to be about $0.01 per graph. For $5, you should get at least 500 graphs (btw, that's math!).
         3. Click "Get API key".
         4. Name your API key and click "Create API key" (it will start with `sk-ant-`).
-        5. Copy and paste this someplace safe. The first time you run this, you'll need paste it in. Your browser will offer to store it in your password manager for secure autofill (which you don't HAVE to do, but you can--it's as secure as any other saved password you have).
+        5. Copy and paste this someplace safe. The first time you run this, you'll need paste it in. Your browser will offer to store it in your password manager for secure autofill (which you don't HAVE to do, but you can---it's as secure as any other saved password you have).
 
     </details>
 
 
 2. **Clone the repo**
 
-    Copy and paste this into your terminal and hit enter.
+    Copy and paste this into your terminal and hit enter:
 
     ```bash
     git clone https://github.com/mathfour/do-the-math.git
@@ -254,7 +262,7 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 
 3. **Run it**
 
-    Copy and paste each of these into your terminal and hit enter.
+    Copy and paste each of these into your terminal and hit enter:
 
     ```bash
     cd do-the-math
