@@ -21,6 +21,7 @@ Three docs (decided 2026-06-05):
 - System Python is **3.9.6** (too old) → backend pins **Python 3.12 via `uv`**.
 - Node **25** / npm **11** — fine for Vite.
 - No `gh` CLI — not needed; we push to `main` directly. Remote: `mathfour/do-the-math`.
+- **CI pins Node 22** (dev is on Node 25) — 22 is the current LTS line and the stable target for CI reproducibility; Vite 8 supports it (needs ≥20.19 / ≥22.12). Dev-vs-CI gap is intentional, not drift.
 
 ## Key technical decisions
 
@@ -45,8 +46,18 @@ Three docs (decided 2026-06-05):
 
 ## Open questions
 
-- _(none yet)_
+- **SPEC §8/§10 vs. direct-to-main (needs explicit human waiver).** SPEC asks for PR-based merges and "CI blocks merge on failure." Our workflow is commit-straight-to-main (no PRs), so those two acceptance boxes can't be *literally* met — there's no merge to block and CI runs post-hoc on `main`. Flagged by Clarice (Phase 0 review). Not a defect; needs an explicit "we waive these / or we adopt PRs" decision at/ before final acceptance. **Status: awaiting human call.**
+
+## To carry into later phases
+
+- **Coverage gate (Phase 1):** `pytest-cov` + coverage config exist, but CI runs plain `pytest`. When Phase 1 lands real logic, switch CI to `uv run pytest --cov=app --cov-report=term-missing --cov-fail-under=80` (SPEC §7 wants ~80% backend). Captured so it doesn't slip.
+- **Scaffold placeholders:** `frontend/src/App.tsx` and both smoke tests (`App.test.tsx`, `e2e/smoke.spec.ts`) are stock Vite boilerplate, intentionally. They get **replaced in Phase 2 (UI) / Phase 3 (real E2E)** — not carried forward.
 
 ## Clarice review log
 
-- _(awaiting first phase-boundary review)_
+- **Phase 0 — APPROVED** (proceed to Phase 1). Everything green, repo clean. Four non-blocking follow-ups:
+  1. SPEC §8/§10 PR-merge boxes can't be literally met under direct-to-main → recorded as an open question above; needs a human waiver call (don't silently check those boxes at acceptance).
+  2. Wire the coverage gate when Phase 1 lands logic → recorded in "To carry into later phases."
+  3. Document why CI pins Node 22 → done (see Environment).
+  4. Confirm stock scaffold is slated for replacement → confirmed (see "To carry into later phases").
+  - Also resolved: `claude-sonnet-4-6` confirmed as the correct current Sonnet 4.6 id; stays in config.
