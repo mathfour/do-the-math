@@ -34,8 +34,8 @@ jobs:
       - name: Black (format check)
         run: uv run black --check .
 
-      - name: Pytest
-        run: uv run pytest
+      - name: Pytest (with coverage gate)
+        run: uv run pytest --cov-fail-under=80
 
   frontend:
     name: Frontend (lint + unit + e2e)

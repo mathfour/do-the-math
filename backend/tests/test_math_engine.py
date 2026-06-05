@@ -102,6 +102,18 @@ def test_collinear_three_points_rejected():
     assert exc.value.reason == "not_a_function"
 
 
+def test_three_points_with_duplicates_get_clean_message():
+    with pytest.raises(DerivationError) as exc:
+        _derive({"kind": "parabola_three_points", "points": [[0, 0], [0, 0], [1, 1]]})
+    assert "distinct" in exc.value.message.lower()
+
+
+def test_three_points_sharing_an_x_value_rejected():
+    with pytest.raises(OutOfScopeError) as exc:
+        _derive({"kind": "parabola_three_points", "points": [[0, 0], [0, 1], [1, 2]]})
+    assert exc.value.reason == "not_a_function"
+
+
 def test_unsupported_implicit_raises_out_of_scope():
     with pytest.raises(OutOfScopeError) as exc:
         _derive({"kind": "unsupported", "reason": "implicit", "detail": "circle"})

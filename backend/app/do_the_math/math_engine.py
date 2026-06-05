@@ -206,6 +206,15 @@ def _parabola_vertex_point(ir: ParabolaVertexPoint) -> sp.Expr:
 
 def _parabola_three_points(ir: ParabolaThreePoints) -> sp.Expr:
     pts = [_pt(p) for p in ir.points]
+    if len(set(pts)) < 3:
+        raise DerivationError("Please give three distinct points for the parabola.")
+    # Two points sharing an x-value can't both lie on a function y = f(x).
+    if len({px for px, _ in pts}) < 3:
+        raise OutOfScopeError(
+            "not_a_function",
+            "Two of those points share an x-value, so no function y = f(x) passes "
+            "through all three.",
+        )
     a_s, b_s, c_s = sp.symbols("a b c")
     equations = [sp.Eq(py, a_s * px**2 + b_s * px + c_s) for px, py in pts]
     solution = sp.linsolve(equations, (a_s, b_s, c_s))

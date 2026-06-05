@@ -7,10 +7,14 @@ is the real one future agents plug into; only the registry's contents grow.
 
 from __future__ import annotations
 
+import logging
+
 from .agents.base import AgentRegistry, Request
 from .agents.graphing import GraphingAgent
 from .ir import Envelope
 from .math_interpreter import MathInterpreter
+
+logger = logging.getLogger(__name__)
 
 
 class Router:
@@ -21,9 +25,13 @@ class Router:
     def handle(self, message: str, history: list[dict] | None = None) -> Envelope:
         try:
             raw_intent = self.interpreter.to_raw_intent(message, history)
-        except Exception as exc:  # provider/transport failure — never crash the app
+        except Exception:  # provider/transport failure — never crash the app
+            # Log the detail server-side; keep the user-facing message generic so
+            # SDK/transport internals aren't leaked to the client.
+            logger.exception("Interpreter failed to produce a Math Intent")
             return Envelope.error(
-                f"Couldn't reach the language model to interpret that request: {exc}",
+                "Sorry — I couldn't reach the math interpreter just now. "
+                "Please check your API key and try again.",
                 reason="interpreter_error",
             )
 

@@ -68,3 +68,50 @@ def test_chat_clarification_path(fake_adapter):
 def test_empty_message_rejected_by_validation():
     resp = client.post("/chat", json={"message": ""}, headers={"X-Anthropic-Key": "sk-test"})
     assert resp.status_code == 422
+
+
+def test_clarification_round_trip_completes_the_graph(monkeypatch):
+    """SPEC §4 loop end-to-end: underspecified -> question -> answer -> graph.
+
+    The adapter is rebuilt per request, so script a fresh provider response for
+    each /chat call: first incomplete (no vertex), then complete.
+    """
+    responses = [
+        {"kind": "parabola_vertex_direction", "direction": "up"},  # missing vertex
+        {"kind": "parabola_vertex_direction", "vertex": [1, 2], "direction": "up"},
+    ]
+    seen_history: list = []
+
+    def _factory(api_key, model):
+        provider = FakeProvider(responses.pop(0))
+        # Wrap to record the history the interpreter passed through.
+        original = provider.complete_intent
+
+        def _record(message, history=None):
+            seen_history.append(history)
+            return original(message, history)
+
+        provider.complete_intent = _record
+        return provider
+
+    monkeypatch.setattr(main, "AnthropicAdapter", _factory)
+    headers = {"X-Anthropic-Key": "sk-test"}
+
+    # Turn 1: underspecified -> clarification.
+    first = client.post("/chat", json={"message": "graph a parabola"}, headers=headers).json()
+    assert first["type"] == "clarification"
+    assert first["payload"]["field"] == "vertex"
+
+    # Turn 2: the user's answer, carried back with conversation history.
+    history = [
+        {"role": "user", "content": "graph a parabola"},
+        {"role": "assistant", "content": first["payload"]["question"]},
+    ]
+    second = client.post(
+        "/chat",
+        json={"message": "the vertex is (1, 2)", "history": history},
+        headers=headers,
+    ).json()
+    assert second["type"] == "graph"
+    assert second["payload"]["equation"] == "y = (x - 1)**2 + 2"
+    assert seen_history[-1] == history  # history reached the interpreter

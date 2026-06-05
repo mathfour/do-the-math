@@ -42,7 +42,10 @@ target-version = ["py312"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q --cov=app --cov-report=term-missing --cov-fail-under=80"
+# Coverage is measured on every run; the --cov-fail-under threshold is applied
+# in CI only (see .github/workflows/ci.yml) so focused/TDD runs like
+# `pytest tests/test_ir.py` aren't reported as failing for under-covering the app.
+addopts = "-q --cov=app --cov-report=term-missing"
 
 [tool.coverage.run]
 source = ["app"]

@@ -64,6 +64,12 @@ Three docs (decided 2026-06-05):
 
 ## Clarice review log
 
+- **Phase 1 — APPROVED** (proceed to Phase 2). Four non-blocking follow-ups, all addressed before Phase 2:
+  1. **Coverage-gate ergonomics** → moved `--cov-fail-under=80` out of `pyproject` `addopts` (which made focused runs like `pytest tests/test_ir.py` "fail" for under-covering the app) into the CI pytest command. `--cov` stays in addopts; enforcement stays in CI.
+  2. **Sanitized interpreter-error envelope** → `router.handle` now logs the exception server-side (`logger.exception`) and returns a fixed, friendly message instead of interpolating the raw exception (no SDK/transport leakage on a live key).
+  3. **Clarification round-trip test** → added `test_clarification_round_trip_completes_the_graph` at the `/chat` level (underspecified → question → answer-with-history → graph), asserting history reaches the interpreter. Locks the SPEC §4 loop the demo leans on.
+  4. **Duplicate three-points message** → `_parabola_three_points` now returns a clean "give three distinct points" (duplicates) / "two points share an x-value" (same-x) message instead of the generic "unexpected variables" guard. Tests added.
+  - Carried forward (acknowledged): SPEC §8/§10 PR boxes stay **waived** (not checked) at acceptance; stock Vite `App.tsx` + smoke tests get replaced in Phase 2/3.
 - **Phase 0 — APPROVED** (proceed to Phase 1). Everything green, repo clean. Four non-blocking follow-ups:
   1. SPEC §8/§10 PR-merge boxes can't be literally met under direct-to-main → recorded as an open question above; needs a human waiver call (don't silently check those boxes at acceptance).
   2. Wire the coverage gate when Phase 1 lands logic → recorded in "To carry into later phases."
