@@ -1,0 +1,84 @@
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Envelope } from '../types'
+
+// GraphView pulls in plotly.js-dist-min (a heavy browser bundle); stub it.
+vi.mock('plotly.js-dist-min', () => ({ default: { react: vi.fn(), purge: vi.fn() } }))
+vi.mock('../lib/api', () => ({ postChat: vi.fn() }))
+
+import { postChat } from '../lib/api'
+import { Chat } from './Chat'
+
+const mockPostChat = vi.mocked(postChat)
+
+const graphEnvelope: Envelope = {
+  type: 'graph',
+  explanation: 'Interpreted your request and derived y = (x - 1)**2 + 2.',
+  payload: {
+    figure: { data: [], layout: {} },
+    equation: 'y = (x - 1)**2 + 2',
+    ir: { kind: 'parabola_vertex_direction', vertex: [1, 2], direction: 'up' },
+  },
+}
+
+beforeEach(() => mockPostChat.mockReset())
+
+async function sendMessage(text: string) {
+  await userEvent.type(screen.getByLabelText(/describe a graph/i), text)
+  await userEvent.click(screen.getByRole('button', { name: /send/i }))
+}
+
+describe('Chat', () => {
+  it('renders the user turn and a graph response with reasoning', async () => {
+    mockPostChat.mockResolvedValue(graphEnvelope)
+    render(<Chat apiKey="sk-test" />)
+
+    await sendMessage('a parabola with vertex (1,2) up')
+
+    expect(screen.getByText('a parabola with vertex (1,2) up')).toBeInTheDocument()
+    expect(await screen.findByRole('img', { name: /graph/i })).toBeInTheDocument()
+    // Reasoning panel surfaces the derived equation and the IR.
+    expect(screen.getByText('y = (x - 1)**2 + 2')).toBeInTheDocument()
+    expect(screen.getByText(/parabola_vertex_direction/)).toBeInTheDocument()
+  })
+
+  it('renders a clarification question', async () => {
+    mockPostChat.mockResolvedValue({
+      type: 'clarification',
+      explanation: 'Where is the vertex?',
+      payload: { question: 'Where is the vertex of the parabola?', field: 'vertex' },
+    })
+    render(<Chat apiKey="sk-test" />)
+
+    await sendMessage('graph a parabola')
+    expect(await screen.findByText(/where is the vertex of the parabola/i)).toBeInTheDocument()
+  })
+
+  it('renders an error state without crashing', async () => {
+    mockPostChat.mockResolvedValue({
+      type: 'error',
+      explanation: 'not supported',
+      payload: { message: "Implicit equations aren't supported in v1.", reason: 'implicit' },
+    })
+    render(<Chat apiKey="sk-test" />)
+
+    await sendMessage('graph x^2 + y^2 = 25')
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/implicit equations aren't supported/i)
+  })
+
+  it('sends prior turns as history on the next message', async () => {
+    mockPostChat.mockResolvedValue(graphEnvelope)
+    render(<Chat apiKey="sk-test" />)
+
+    await sendMessage('first')
+    await sendMessage('second')
+
+    const lastCall = mockPostChat.mock.calls.at(-1)!
+    const [message, history, apiKey] = lastCall
+    expect(message).toBe('second')
+    expect(apiKey).toBe('sk-test')
+    expect(history[0]).toEqual({ role: 'user', content: 'first' })
+  })
+})

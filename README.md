@@ -107,6 +107,18 @@ v1 is **Anthropic-only**, end to end. The provider adapter interface is built so
 
 ---
 
+## The interface
+
+A simple browser chat:
+
+1. **First-run key screen** — pick a provider (Anthropic in v1) and paste your Anthropic key. It's saved in your browser only.
+2. **Chat** — type a request in plain English; the graph comes back inline.
+3. **Reasoning panel** — each result shows its work: the **Math Intent (IR)** the model produced and the **equation SymPy derived** from it, so you can see the architecture in motion rather than just input → graph.
+
+> Screenshots and a demo recording land in Phase 3 (see `/demo`).
+
+---
+
 ## Running locally
 
 > ⏳ Coming in Phase 4 — a single documented command to install and launch, opening in the browser. Until then, see [notes.md](notes.md) for current build status.

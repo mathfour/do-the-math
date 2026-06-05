@@ -36,7 +36,16 @@ Three docs (decided 2026-06-05):
 
 ## Phase status
 
-- **Phase 1 — Shared math core & output contract:** _complete (pending live check + Clarice review)._
+- **Phase 2 — Front end & chat UI:** _complete (pending Clarice review)._
+  - First-run key screen (provider selector: Anthropic active; OpenAI/Azure/Gemini disabled "Coming soon"; future-providers note; key → `localStorage`), chat with message-list + composer, envelope rendering (graph via Plotly + reasoning panel showing IR + derived equation; clarification; graceful error), `App` key-gate + "Change key".
+  - `lib/`: `types.ts` (Envelope mirror), `storage.ts` (localStorage key), `api.ts` (`POST /chat` with `X-Anthropic-Key` + history; non-200/network → error envelope so the UI never special-cases fetch failures).
+  - **12 frontend unit tests** (key screen renders/captures/stores key + only Anthropic selectable; chat renders turns; graph/clarification/error from sample envelopes; history sent on next turn). Playwright smoke updated to the new key screen. Stock Vite `App.tsx` + smoke replaced (Clarice carry-forward cleared).
+  - Phase 2 decisions:
+    - **Plotly via `plotly.js-dist-min` + a thin `useEffect`/`Plotly.react` wrapper**, not `react-plotly.js` — the latter isn't updated for React 19. Loose `plotly.d.ts` covers the small slice we use; tests mock the module.
+    - **In-memory `localStorage` shim in `src/test/setup.ts`** — this jsdom build ships a non-functional `Storage`.
+    - **Bundle size:** plotly makes the JS bundle ~4.8 MB (1.4 MB gzipped). Fine for a local demo; a dynamic-import code-split is a possible Phase 5 optimization (noted, not done).
+    - Backend dev port assumed **8000** (`api.ts` default; overridable via `VITE_API_BASE`); CORS already allows the Vite origin. Run commands documented in Phase 4.
+- **Phase 1 — Shared math core & output contract:** _complete (Clarice-approved; live check deferred to Phase 2/3)._
   - `ir.py` (discriminated-union IR + Envelope), `math_engine.py` (SymPy derive), `graph_renderer.py` (Plotly dict), `clarification.py`, provider seam (`base`/`fake`/`anthropic_adapter` via tool-use), `math_interpreter`, agent registry + `GraphingAgent`, `router`, `config`, FastAPI `POST /chat` + `/health`.
   - **60 backend tests, 93% coverage** (gate set to fail under 80%). Anthropic adapter tested with the network mocked.
   - Live check script at `backend/scripts/live_check.py` — runs the real Anthropic slice. **Deferred (human decision 2026-06-05): we'll do the first real-API test once the UI exists (Phase 2/3), so it can be watched end to end rather than read from a terminal.** Backend is fully exercised by mocked unit tests (93%) until then.
