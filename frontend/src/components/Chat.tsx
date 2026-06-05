@@ -63,11 +63,15 @@ export function Chat({ apiKey }: { apiKey: string }) {
     <div className="chat">
       <div className="messages">
         {messages.length === 0 && (
-          <p className="empty-hint">
-            In this first version, you can graph on a two-dimensional Cartesian coordinate plane.
-            Use regular words like “Please give me a parabola with vertex (1, 2) opening upward”, or
-            “I'd like to see the line through (0, 0) and (2, 4)”.
-          </p>
+          <div className="empty-hint">
+            <p>What would you like me to graph?</p>
+            <p>You can use regular words like:</p>
+            <ul>
+              <li>A line through (-2, 8) and (42, 0)</li>
+              <li>Please give me a parabola with vertex (1, 2) opening upward</li>
+              <li>The plain old tangent graph</li>
+            </ul>
+          </div>
         )}
         {messages.map((m) => (
           <div key={m.id} data-msg-id={m.id} className={`message ${m.role}`}>

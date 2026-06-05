@@ -292,6 +292,19 @@
   color: var(--muted);
 }
 
+.empty-hint p {
+  margin: 0 0 6px;
+}
+
+.empty-hint ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.empty-hint li {
+  margin: 2px 0;
+}
+
 .message {
   scroll-margin-top: 16px; /* breathing room when auto-scrolled to the top */
 }
