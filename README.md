@@ -2,7 +2,9 @@
 
 A natural-language math agent. Describe what you want in plain English and Do the Math figures out the rest — starting with 2D graphing, and built from day one to grow into a full ecosystem of math agents (solving, factoring, calculus, proofs, and more).
 
-> 🚧 **Status: in active development — v1.** The graphing vertical slice works end to end (see the [Demo](#demo) below); local-run docs are landing next. This README is a living document and grows as the build progresses. The full, frozen build spec lives in [SPEC.md](SPEC.md); build decisions and progress are tracked in [NOTES.md](NOTES.md).
+> 🚧 **Status: in active development — v1.** The graphing vertical slice works end to end (see the [Demo](#demo) below). This README is a living document and grows as the build progresses. The full, frozen build spec lives in [SPEC.md](SPEC.md); build decisions and progress are tracked in [NOTES.md](NOTES.md).
+
+### 👉 Just want to run it? Jump to **[Running locally](#running-locally)**.
 
 ---
 
@@ -133,11 +135,48 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 
 ## Running locally
 
-**Prerequisites:** [uv](https://docs.astral.sh/uv/) (manages Python) and [Node.js](https://nodejs.org/) 20.19+ / 22.12+.
+**Prerequisites:** [uv](https://docs.astral.sh/uv/) (manages Python) and [Node.js](https://nodejs.org/) 20.19+ / 22.12+. You'll also need [git](https://git-scm.com/) to clone, and an [Anthropic API key](https://console.anthropic.com/).
 
-From the repo root:
+<details>
+<summary>Don't have <code>uv</code>, Node, or git yet? Here's how to get them</summary>
+
+You only need to do this once. Open a terminal and:
+
+**uv** (manages Python for you — you don't need to install Python separately):
 
 ```bash
+# macOS / Linux:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# or, with Homebrew:  brew install uv
+# Windows (PowerShell): irm https://astral.sh/uv/install.ps1 | iex
+```
+
+**Node.js** (version 20.19+ or 22.12+): download the installer from [nodejs.org](https://nodejs.org/), or use a package manager:
+
+```bash
+# macOS (Homebrew):  brew install node
+# Windows (winget):  winget install OpenJS.NodeJS.LTS
+```
+
+**git**: [git-scm.com/downloads](https://git-scm.com/downloads), or `brew install git` (macOS) / `winget install Git.Git` (Windows). macOS may already have it.
+
+**An Anthropic API key**: sign in at [console.anthropic.com](https://console.anthropic.com/) → **API Keys** → create one (starts with `sk-ant-`). You enter it in the app on first run — it's stored in your browser only.
+
+To confirm everything's installed, the following should each print a version:
+
+```bash
+uv --version
+node --version
+git --version
+```
+
+</details>
+
+Then clone the repo and run it:
+
+```bash
+git clone https://github.com/mathfour/do-the-math.git
+cd do-the-math
 ./run.sh
 ```
 

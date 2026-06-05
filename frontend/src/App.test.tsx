@@ -8,8 +8,15 @@ vi.mock('plotly.js-dist-min', () => ({ default: { react: vi.fn(), purge: vi.fn()
 import App from './App'
 
 const KEY = 'do-the-math:anthropic-key'
-beforeEach(() => localStorage.removeItem(KEY))
-afterEach(() => localStorage.removeItem(KEY))
+const LLM = 'do-the-math:llm-summaries'
+beforeEach(() => {
+  localStorage.removeItem(KEY)
+  localStorage.removeItem(LLM)
+})
+afterEach(() => {
+  localStorage.removeItem(KEY)
+  localStorage.removeItem(LLM)
+})
 
 describe('App key gate', () => {
   it('shows the API key screen when no key is stored', () => {
@@ -32,5 +39,15 @@ describe('App key gate', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /start over/i }))
     expect(screen.getByLabelText(/anthropic api key/i)).toBeInTheDocument()
+  })
+
+  it('shows the AI-responses status in the header and toggles it', async () => {
+    localStorage.setItem(KEY, 'sk-ant-xyz')
+    render(<App />)
+
+    expect(screen.getByText(/ai responses:/i)).toHaveTextContent(/off/i)
+    await userEvent.click(screen.getByRole('button', { name: /turn on/i }))
+    expect(screen.getByText(/ai responses:/i)).toHaveTextContent(/on/i)
+    expect(localStorage.getItem(LLM)).toBe('1')
   })
 })

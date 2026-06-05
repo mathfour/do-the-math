@@ -36,6 +36,29 @@
   transform: translateY(3px);
 }
 
+.header-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.ai-status {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.ai-status strong {
+  color: var(--muted);
+}
+
+.ai-status.on strong {
+  color: var(--accent); /* stands out when AI responses are on */
+}
+
 .link-button {
   background: none;
   border: none;

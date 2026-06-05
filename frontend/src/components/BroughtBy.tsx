@@ -8,7 +8,7 @@ export function BroughtBy({ className = '' }: { className?: string }) {
       target="_blank"
       rel="noreferrer"
     >
-      <span className="brought-by-text">Brought to You By</span>
+      <span className="brought-by-text">Brought to you by</span>
       <img className="brought-by-logo" src="/mathfour-logo.png" alt="MathFour.com" />
     </a>
   )
