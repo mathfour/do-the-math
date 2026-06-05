@@ -46,7 +46,7 @@ Three docs (decided 2026-06-05):
 
 ## Open questions
 
-- **SPEC §8/§10 vs. direct-to-main (needs explicit human waiver).** SPEC asks for PR-based merges and "CI blocks merge on failure." Our workflow is commit-straight-to-main (no PRs), so those two acceptance boxes can't be *literally* met — there's no merge to block and CI runs post-hoc on `main`. Flagged by Clarice (Phase 0 review). Not a defect; needs an explicit "we waive these / or we adopt PRs" decision at/ before final acceptance. **Status: awaiting human call.**
+- ~~SPEC §8/§10 vs. direct-to-main~~ — **RESOLVED 2026-06-05: WAIVED by human decision.** We keep commit-straight-to-`main`. At final acceptance, the SPEC §8 "merged via pull request" and §10 "blocks merge on failure" boxes are explicitly marked **WAIVED** (rationale: chosen direct-to-main workflow; no PR/merge gate exists), **not** checked. CI still runs on every push to `main` as a post-hoc guard. Flagged by Clarice (Phase 0 review).
 
 ## To carry into later phases
 
