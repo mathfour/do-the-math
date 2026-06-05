@@ -119,9 +119,9 @@ A simple browser chat:
 
 ## Demo
 
-![Do the Math — ready state](demo/ready-state.png)
+<img src="demo/ready-state.png" alt="Do the Math — ready state (first-run provider/key screen)" width="520" />
 
-![A graphing result with the reasoning panel expanded](demo/graph-result.png)
+![A graphing result with the reasoning panel expanded — request, conversational answer, graph, and the Math Intent (IR) plus the SymPy-derived equation](demo/graph-result.png)
 
 Full slice in motion — request → IR → SymPy derivation → graph:
 
