@@ -1,23 +1,39 @@
 /* ---- App shell ---- */
 .app {
-  max-width: 820px;
-  margin: 0 auto;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
+/* Full-width top bar: MathFour logo flush-left, actions flush-right, all
+   aligned to a common bottom edge. */
 .app-header {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
-  padding: 16px 20px;
+  gap: 12px;
+  padding: 12px 20px;
   border-bottom: 1px solid var(--border);
 }
 
 .app-header h1 {
-  font-size: 1.2rem;
+  font-size: 1.55rem; /* a bit bigger to balance the taller logo */
   margin: 0;
+}
+
+.header-by {
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.header-logo {
+  height: 40px;
+  width: auto;
+  display: block;
+  /* The logo's colored square sits lower than its "mathfour.com" text, so
+     nudge it down a touch to line that text up with the words beside it. */
+  transform: translateY(3px);
 }
 
 .link-button {
@@ -25,6 +41,48 @@
   border: none;
   color: var(--muted);
   text-decoration: underline;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline; /* title + credit baselines align; logo bottom sits on that line */
+  gap: 10px;
+  flex-wrap: nowrap; /* keep title, credit, and logo on one bottom line */
+  min-width: 0;
+}
+
+/* "Brought to You By" + MathFour logo */
+.brought-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--muted);
+}
+
+.brought-by-text {
+  font-size: 0.85rem;
+}
+
+.brought-by-logo {
+  height: auto;
+  width: 200px;
+  max-width: 100%;
+  display: block;
+}
+
+/* Key screen: text stacked above a wider logo, centered under the card. */
+.key-screen-credit {
+  display: flex; /* block-level + full width so align-items centers it */
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.key-screen-credit .brought-by-logo {
+  width: 240px;
 }
 
 /* ---- API key screen ---- */
@@ -137,6 +195,9 @@
 /* ---- Chat ---- */
 .chat {
   flex: 1;
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   padding: 16px 20px;

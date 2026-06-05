@@ -52,8 +52,9 @@ export function Chat({ apiKey }: { apiKey: string }) {
       <div className="messages">
         {messages.length === 0 && (
           <p className="empty-hint">
-            Try: “a parabola with vertex (1, 2) opening upward”, or “the line through (0, 0) and (2,
-            4)”.
+            In this first version, you can graph on a two-dimensional Cartesian coordinate plane.
+            Use regular words like “Please give me a parabola with vertex (1, 2) opening upward”, or
+            “I'd like to see the line through (0, 0) and (2, 4)”.
           </p>
         )}
         {messages.map((m) => (

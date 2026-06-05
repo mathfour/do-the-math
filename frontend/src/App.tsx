@@ -11,7 +11,7 @@ export default function App() {
     return <ApiKeyScreen onSubmit={setKey} />
   }
 
-  function changeKey() {
+  function startOver() {
     clearApiKey()
     setKey(null)
   }
@@ -19,9 +19,15 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Do the Math</h1>
-        <button type="button" className="link-button" onClick={changeKey}>
-          Change key
+        <div className="brand">
+          <h1>Do the Math</h1>
+          <span className="header-by">brought to you by</span>
+          <a href="https://mathfour.com" target="_blank" rel="noreferrer" aria-label="MathFour.com">
+            <img className="header-logo" src="/mathfour-logo.png" alt="MathFour.com" />
+          </a>
+        </div>
+        <button type="button" className="link-button" onClick={startOver}>
+          Start over
         </button>
       </header>
       <Chat apiKey={apiKey} />
