@@ -26,7 +26,7 @@ export default function App() {
     )
   }
 
-  function startOver() {
+  function logOut() {
     clearApiKey()
     setKey(null)
   }
@@ -62,8 +62,8 @@ export default function App() {
               {aiResponses ? 'Use standard' : 'Use AI-written'}
             </button>
           </span>
-          <button type="button" className="link-button" onClick={startOver}>
-            Start over
+          <button type="button" className="link-button" onClick={logOut}>
+            Log out
           </button>
         </div>
       </header>

@@ -30,14 +30,14 @@ describe('App key gate', () => {
     expect(screen.getByLabelText(/describe a graph/i)).toBeInTheDocument()
   })
 
-  it('transitions from key screen to chat on submit, and back on "Start over"', async () => {
+  it('transitions from key screen to chat on submit, and back on "Log out"', async () => {
     render(<App />)
 
     await userEvent.type(screen.getByLabelText(/anthropic api key/i), 'sk-ant-xyz')
     await userEvent.click(screen.getByRole('button', { name: /start graphing/i }))
     expect(screen.getByLabelText(/describe a graph/i)).toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('button', { name: /start over/i }))
+    await userEvent.click(screen.getByRole('button', { name: /log out/i }))
     expect(screen.getByLabelText(/anthropic api key/i)).toBeInTheDocument()
   })
 

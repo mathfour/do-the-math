@@ -135,52 +135,140 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 
 ## Running locally
 
-**Prerequisites:** [uv](https://docs.astral.sh/uv/) (manages Python) and [Node.js](https://nodejs.org/) 20.19+ / 22.12+. You'll also need [git](https://git-scm.com/) to clone, and an [Anthropic API key](https://console.anthropic.com/).
+1. **Get the prerequisites**
+    * [uv](https://docs.astral.sh/uv/) (manages Python)
+    * [Node.js](https://nodejs.org/) 20.19+ / 22.12+
+    * [git](https://git-scm.com/)
+    * [An Anthropic API key](https://console.anthropic.com/)
 
-<details>
-<summary>Don't have those prerequisites yet? Here's how to get them...</summary>
+    <details>
+    <summary>Do you need more help with these pre-requisites?</summary>
 
-You only need to do this once. Open a terminal and:
+    1. Open a terminal on your computer
 
-**uv** (manages Python for you — you don't need to install Python separately):
+        <details>
+        <summary>macOS / Linux</summary>
+        On a Mac, press Command + Space, type "terminal", and press Enter. On most Linux desktops, press Ctrl + Alt + T, or open your applications and search for "Terminal".
+        </details>
 
-```bash
-# macOS / Linux:
-curl -LsSf https://astral.sh/uv/install.sh | sh
-# or, with Homebrew:  brew install uv
-# Windows (PowerShell): irm https://astral.sh/uv/install.ps1 | iex
-```
+        <details>
+        <summary>Windows (PowerShell)</summary>
+        Press the Windows key, type "PowerShell", and click Windows PowerShell.
+        </details>
 
-**Node.js** (version 20.19+ or 22.12+): download the installer from [nodejs.org](https://nodejs.org/), or use a package manager:
+    2. Install uv (this also manages Python for you)
+        <details>
+        <summary>macOS / Linux</summary>
+        First install Homebrew — a package manager we'll use for this and the next couple of steps. Copy and paste this into your terminal and hit enter (it may ask for your computer password, and can take a few minutes):
 
-```bash
-# macOS (Homebrew):  brew install node
-# Windows (winget):  winget install OpenJS.NodeJS.LTS
-```
+        ```bash
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        ```
 
-**git**: [git-scm.com/downloads](https://git-scm.com/downloads), or `brew install git` (macOS) / `winget install Git.Git` (Windows). macOS may already have it.
+        Then install uv:
 
-**An Anthropic API key**: sign in at [console.anthropic.com](https://console.anthropic.com/) → **API Keys** → create one (starts with `sk-ant-`). You enter it in the app on first run — it's stored in your browser only.
+        ```bash
+        brew install uv
+        ```
 
-To confirm everything's installed, the following should each print a version:
+        </details>
 
-```bash
-uv --version
-node --version
-git --version
-```
+        <details>
+        <summary>Windows (PowerShell)</summary>
 
-</details>
+        Copy and paste this into your terminal and hit enter:
 
-Then clone the repo and run it:
+        ```bash
+        irm https://astral.sh/uv/install.ps1 | iex
+        ```
+        </details>
 
-```bash
-git clone https://github.com/mathfour/do-the-math.git
-cd do-the-math
-./run.sh
-```
+    3. Install Node.js
 
-This installs dependencies for both halves, starts the backend (port 8000) and the frontend, and opens the app in your browser. On first run, choose **Anthropic**, paste your [Anthropic API key](https://console.anthropic.com/), and start graphing — your key is stored in your browser and sent only to Anthropic (via the local backend). Press **Ctrl+C** to stop.
+        <details>
+        <summary>macOS / Linux</summary>
+
+        ```bash
+        brew install node
+        ```
+        </details>
+
+        <details>
+        <summary>Windows (PowerShell)</summary>
+
+        ```bash
+        winget install OpenJS.NodeJS.LTS
+        ```
+        </details>
+
+    4. Install git
+
+        <details>
+        <summary>macOS / Linux</summary>
+        If you're running a Mac, you might already have this, but it won't hurt to run this.
+
+        ```bash
+        brew install git
+        ```
+        </details>
+
+        <details>
+        <summary>Windows (PowerShell)</summary>
+
+        ```bash
+        winget install Git.Git
+        ```
+        </details>
+
+    5. Confirm everything's installed
+
+        Copy and paste each of these into your terminal and hit enter. They should each print a version. If they give you `command not found` you might have to go back and redo a step.
+
+        ```bash
+        uv --version
+        ```
+        ```bash
+        node --version
+        ```
+        ```bash
+        git --version
+        ```
+
+    6. Get an Anthropic API key
+        1. Sign in at [console.anthropic.com](https://console.anthropic.com/)
+        2. If your "credit balance" is zero, click on add funds and add $5 of credits. (Be careful--after you add credits, it will prompt you to automatically add credits when you go low. A safe bet is to click "Skip for now".) The API is pay-as-you-go from a prepaid balance and seems to be about $0.01 per graph. For $5, you should get at least 500 graphs (btw, that's math!).
+        3. Click "Get API key".
+        4. Name your API key and click "Create API key" (it will start with `sk-ant-`).
+        5. Copy and paste this someplace safe. The first time you run this, you'll need paste it in. Your browser will offer to store it in your password manager for secure autofill (which you don't HAVE to do, but you can--it's as secure as any other saved password you have).
+
+    </details>
+
+
+2. **Clone the repo**
+
+    Copy and paste this into your terminal and hit enter.
+
+    ```bash
+    git clone https://github.com/mathfour/do-the-math.git
+    ```
+
+3. **Run it**
+
+    Copy and paste each of these into your terminal and hit enter.
+
+    ```bash
+    cd do-the-math
+    ```
+
+    ```bash
+    ./run.sh
+    ```
+
+This installs dependencies for both halves, starts the backend (port 8000) and the frontend, and opens the app in your browser.
+
+On first run, choose **Anthropic** and paste your API key (see the prerequisites above for how to get one). It's saved in your browser, so you stay signed in next time — and sent only to Anthropic, via the local backend.
+
+Press **Ctrl+C** to stop.
 
 <details>
 <summary>Prefer to run the two halves yourself?</summary>
