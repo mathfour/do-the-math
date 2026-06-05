@@ -70,8 +70,10 @@ export function ApiKeyScreen({ onSubmit }: { onSubmit: (key: string) => void }) 
             onChange={(e) => setAiResponses(e.target.checked)}
           />
           <span>
-            Let the AI write the result lines (more conversational, uses more of your API tokens).
-            Off keeps the standard written responses.
+            Use <strong>AI-written replies</strong> — let the AI phrase each result in its own
+            conversational words (uses more of your API tokens). Either way, the AI reads your
+            request and every graph is computed exactly; this only changes the wording. You can
+            switch this anytime from the chat.
           </span>
         </label>
 

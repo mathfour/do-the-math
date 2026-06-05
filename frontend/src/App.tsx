@@ -4,6 +4,12 @@ import { ApiKeyScreen } from './components/ApiKeyScreen'
 import { Chat } from './components/Chat'
 import { clearApiKey, getApiKey, getLlmSummaries, setLlmSummaries } from './lib/storage'
 
+const REPLY_TOOLTIP =
+  'The AI always reads your request, and every graph is computed exactly by a math ' +
+  'engine — never by the AI. This only changes how the reply sentence is worded: ' +
+  '“AI-written” phrases it freshly each time (and uses more API tokens); ' +
+  '“Standard” uses a clear written line.'
+
 export default function App() {
   const [apiKey, setKey] = useState<string | null>(() => getApiKey())
   const [aiResponses, setAiResponses] = useState(() => getLlmSummaries())
@@ -43,9 +49,17 @@ export default function App() {
         </div>
         <div className="header-controls">
           <span className={`ai-status ${aiResponses ? 'on' : ''}`.trim()}>
-            AI responses: <strong>{aiResponses ? 'On' : 'Off'}</strong>
+            Replies: <strong>{aiResponses ? 'AI-written' : 'Standard'}</strong>
+            <span
+              className="info-icon"
+              tabIndex={0}
+              aria-label={REPLY_TOOLTIP}
+              title={REPLY_TOOLTIP}
+            >
+              ⓘ
+            </span>
             <button type="button" className="link-button" onClick={toggleAi}>
-              {aiResponses ? 'Turn off' : 'Turn on'}
+              {aiResponses ? 'Use standard' : 'Use AI-written'}
             </button>
           </span>
           <button type="button" className="link-button" onClick={startOver}>

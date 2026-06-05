@@ -41,13 +41,13 @@ describe('App key gate', () => {
     expect(screen.getByLabelText(/anthropic api key/i)).toBeInTheDocument()
   })
 
-  it('shows the AI-responses status in the header and toggles it', async () => {
+  it('shows the reply-wording status in the header and toggles it', async () => {
     localStorage.setItem(KEY, 'sk-ant-xyz')
     render(<App />)
 
-    expect(screen.getByText(/ai responses:/i)).toHaveTextContent(/off/i)
-    await userEvent.click(screen.getByRole('button', { name: /turn on/i }))
-    expect(screen.getByText(/ai responses:/i)).toHaveTextContent(/on/i)
+    expect(screen.getByText(/replies:/i)).toHaveTextContent(/standard/i)
+    await userEvent.click(screen.getByRole('button', { name: /use ai-written/i }))
+    expect(screen.getByText(/replies:/i)).toHaveTextContent(/ai-written/i)
     expect(localStorage.getItem(LLM)).toBe('1')
   })
 })

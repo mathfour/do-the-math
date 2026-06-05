@@ -56,7 +56,13 @@
 }
 
 .ai-status.on strong {
-  color: var(--accent); /* stands out when AI responses are on */
+  color: var(--accent); /* stands out when AI-written replies are on */
+}
+
+.info-icon {
+  cursor: help;
+  color: var(--muted);
+  font-size: 0.95em;
 }
 
 .link-button {

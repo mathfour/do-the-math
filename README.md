@@ -138,7 +138,7 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 **Prerequisites:** [uv](https://docs.astral.sh/uv/) (manages Python) and [Node.js](https://nodejs.org/) 20.19+ / 22.12+. You'll also need [git](https://git-scm.com/) to clone, and an [Anthropic API key](https://console.anthropic.com/).
 
 <details>
-<summary>Don't have <code>uv</code>, Node, or git yet? Here's how to get them</summary>
+<summary>Don't have those prerequisites yet? Here's how to get them...</summary>
 
 You only need to do this once. Open a terminal and:
 

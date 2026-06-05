@@ -43,7 +43,7 @@ describe('ApiKeyScreen', () => {
 
   it('persists the AI-responses choice (off by default)', async () => {
     render(<ApiKeyScreen onSubmit={vi.fn()} />)
-    const checkbox = screen.getByRole('checkbox', { name: /let the ai write/i })
+    const checkbox = screen.getByRole('checkbox', { name: /ai-written replies/i })
     expect(checkbox).not.toBeChecked()
 
     await userEvent.click(checkbox)
