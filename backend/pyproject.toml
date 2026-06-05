@@ -42,7 +42,7 @@ target-version = ["py312"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+addopts = "-q --cov=app --cov-report=term-missing --cov-fail-under=80"
 
 [tool.coverage.run]
 source = ["app"]

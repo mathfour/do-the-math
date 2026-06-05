@@ -36,7 +36,15 @@ Three docs (decided 2026-06-05):
 
 ## Phase status
 
-- **Phase 0 — Repo & tooling:** _complete (pending Clarice review)._
+- **Phase 1 — Shared math core & output contract:** _complete (pending live check + Clarice review)._
+  - `ir.py` (discriminated-union IR + Envelope), `math_engine.py` (SymPy derive), `graph_renderer.py` (Plotly dict), `clarification.py`, provider seam (`base`/`fake`/`anthropic_adapter` via tool-use), `math_interpreter`, agent registry + `GraphingAgent`, `router`, `config`, FastAPI `POST /chat` + `/health`.
+  - **60 backend tests, 93% coverage** (gate set to fail under 80%). Anthropic adapter tested with the network mocked.
+  - Live check script at `backend/scripts/live_check.py` — runs the real Anthropic slice; **pending the user dropping their key into `backend/.env`.**
+  - Reconciliations / deviations from SPEC (intentional):
+    - **Graph payload shape:** SPEC §3 says `graph` payload "is a Plotly figure spec." We nest it as `{"figure": <plotly>, "equation": str, "ir": dict}` so the reasoning panel (SPEC §9 — surface IR + derived equation) has its data. Frontend reads `payload.figure`.
+    - **`GraphingAgent.can_handle` returns `True`** in v1 (one agent claims every request, turning unknown/missing kinds into clarifications). Real kind-based classification arrives with the second agent — SPEC §3/§6 call the v1 classifier "simple" and defer hardening to Phase 5. A `handles_kind()` helper already encodes the kind set for that future split.
+    - **Coverage gate** lives in `pyproject` `addopts` (`--cov-fail-under=80`), so it's enforced identically by local `uv run pytest` and CI — rather than a separate CI step (addresses Clarice follow-up #2).
+- **Phase 0 — Repo & tooling:** _complete (Clarice-approved)._
   - Docs split: `SPEC.md` frozen, `notes.md` started, `README.md` trimmed to public form.
   - Repo hygiene: `.gitignore`, `.env.example`.
   - Backend: `uv` project (Python 3.12), `pyproject.toml` (fastapi/uvicorn/pydantic/sympy/numpy/anthropic + dev: pytest/ruff/black), package skeleton, smoke tests. `uv run pytest` / `ruff` / `black --check` all green.

@@ -131,3 +131,4 @@ Solver · Simplification · Factoring · Calculus · Geometry · Statistics · P
 
 - **[SPEC.md](SPEC.md)** — the frozen v1 build spec and acceptance checklist (the original planning document; the source of truth for what we agreed to build).
 - **[notes.md](notes.md)** — the living dev log: decisions and their rationale, deviations from the spec, phase status, and review notes.
+- **[CLARICE.md](CLARICE.md)** — the reviewer's phase-by-phase verdicts and follow-ups.
