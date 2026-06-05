@@ -2,7 +2,7 @@
 
 A natural-language math agent. Describe what you want in plain English and Do the Math figures out the rest — starting with 2D graphing, and built from day one to grow into a full ecosystem of math agents (solving, factoring, calculus, proofs, and more).
 
-> 🚧 **Status: in active development — v1 (Phase 0).** This README is a living document and grows as the build progresses. The full, frozen build spec lives in [SPEC.md](SPEC.md); build decisions and progress are tracked in [notes.md](notes.md).
+> 🚧 **Status: in active development — v1 (Phase 0).** This README is a living document and grows as the build progresses. The full, frozen build spec lives in [SPEC.md](SPEC.md); build decisions and progress are tracked in [NOTES.md](NOTES.md).
 
 ---
 
@@ -121,7 +121,7 @@ A simple browser chat:
 
 ## Running locally
 
-> ⏳ Coming in Phase 4 — a single documented command to install and launch, opening in the browser. Until then, see [notes.md](notes.md) for current build status.
+> ⏳ Coming in Phase 4 — a single documented command to install and launch, opening in the browser. Until then, see [NOTES.md](NOTES.md) for current build status.
 
 ---
 
@@ -142,5 +142,5 @@ Solver · Simplification · Factoring · Calculus · Geometry · Statistics · P
 ## Project docs
 
 - **[SPEC.md](SPEC.md)** — the frozen v1 build spec and acceptance checklist (the original planning document; the source of truth for what we agreed to build).
-- **[notes.md](notes.md)** — the living dev log: decisions and their rationale, deviations from the spec, phase status, and review notes.
+- **[NOTES.md](NOTES.md)** — the living dev log: decisions and their rationale, deviations from the spec, phase status, and review notes.
 - **[CLARICE.md](CLARICE.md)** — the reviewer's phase-by-phase verdicts and follow-ups.

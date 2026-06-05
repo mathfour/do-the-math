@@ -14,7 +14,7 @@ Living working notes for building **Do the Math**. Polished, visitor-facing mate
 Three docs (decided 2026-06-05):
 - **README.md** — living public front door; updated incrementally each phase.
 - **SPEC.md** — the original README, frozen verbatim as the immutable v1 build spec + acceptance checklist. We measure against it; we don't edit it.
-- **notes.md** (this file) — living dev log: decisions + rationale, deviations from SPEC, phase status, Clarice's review notes, open questions.
+- **NOTES.md** (this file) — living dev log: decisions + rationale, deviations from SPEC, phase status, Clarice's review notes, open questions.
 
 ## Environment
 
@@ -62,7 +62,7 @@ Three docs (decided 2026-06-05):
     - **`GraphingAgent.can_handle` returns `True`** in v1 (one agent claims every request, turning unknown/missing kinds into clarifications). Real kind-based classification arrives with the second agent — SPEC §3/§6 call the v1 classifier "simple" and defer hardening to Phase 5. A `handles_kind()` helper already encodes the kind set for that future split.
     - **Coverage gate** lives in `pyproject` `addopts` (`--cov-fail-under=80`), so it's enforced identically by local `uv run pytest` and CI — rather than a separate CI step (addresses Clarice follow-up #2).
 - **Phase 0 — Repo & tooling:** _complete (Clarice-approved)._
-  - Docs split: `SPEC.md` frozen, `notes.md` started, `README.md` trimmed to public form.
+  - Docs split: `SPEC.md` frozen, `NOTES.md` started, `README.md` trimmed to public form.
   - Repo hygiene: `.gitignore`, `.env.example`.
   - Backend: `uv` project (Python 3.12), `pyproject.toml` (fastapi/uvicorn/pydantic/sympy/numpy/anthropic + dev: pytest/ruff/black), package skeleton, smoke tests. `uv run pytest` / `ruff` / `black --check` all green.
   - Frontend: Vite + React + TS scaffold; Vitest 4 + RTL, Prettier, Playwright wired. `lint` / `typecheck` / `format:check` / `vitest` / `playwright` all green. (Bumped Vitest 2→4 to align with Vite 8 and clear audit criticals.)

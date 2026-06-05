@@ -2,7 +2,7 @@
 
 Reviewer notes for **Do the Math**. Claude implements; I review at each phase boundary.
 I only ever edit this file. Measured against the frozen [SPEC.md](SPEC.md); deviations are
-tracked against [notes.md](notes.md).
+tracked against [NOTES.md](NOTES.md).
 
 Verdict legend: ✅ approved to proceed · 🟡 approved with follow-ups · 🔴 changes required.
 
@@ -117,7 +117,7 @@ deterministic with defense-in-depth guards. Genuinely above the bar.
 - Float→Rational normalization keeps equations readable; the steep-polynomial test proves the
   asymptote heuristic doesn't eat genuinely-large smooth curves.
 - Both documented SPEC deviations (nested `graph` payload `{figure, equation, ir}`;
-  `can_handle → True` for the single v1 agent) are sensible and logged in `notes.md`.
+  `can_handle → True` for the single v1 agent) are sensible and logged in `NOTES.md`.
 
 ### Follow-ups (none block Phase 2)
 
@@ -169,7 +169,7 @@ deterministic with defense-in-depth guards. Genuinely above the bar.
 - [x] pytest, Vitest + RTL, Playwright harnesses — all wired and green.
 - [x] CI runs lint + all suites on push **and** pull_request.
 
-Phase 0 is genuinely complete. Solid foundation. The decisions in `notes.md` (Math Intent law,
+Phase 0 is genuinely complete. Solid foundation. The decisions in `NOTES.md` (Math Intent law,
 exact-arithmetic gotcha, deterministic clarification table, `unsupported` as a first-class IR kind,
 tool-use for structured IR) are the right calls and bode well for Phase 1.
 
@@ -177,7 +177,7 @@ tool-use for structured IR) are the right calls and bode well for Phase 1.
 
 1. **🟡 PR/merge-gate deviation — needs an explicit human decision.** SPEC §8 and §10 require
    feature branches merged via **reviewed pull requests** and "CI … blocks merge on failure."
-   `notes.md` deliberately chose commit-straight-to-`main`, no PRs, with my phase-boundary review
+   `NOTES.md` deliberately chose commit-straight-to-`main`, no PRs, with my phase-boundary review
    standing in for the PR gate. That's a reasonable workflow, but two acceptance-checklist items
    ("work merges via reviewed pull requests"; "CI … blocks merge on failure") then can't be met as
    written — with direct-to-`main` there is no merge to block; CI is post-hoc. **Not a Phase 0
@@ -190,9 +190,9 @@ tool-use for structured IR) are the right calls and bode well for Phase 1.
    targets ~80% backend coverage, so wire the gate when Phase 1 lands real logic, or it'll quietly
    slip.
 
-3. **Dev/CI Node divergence.** `notes.md` records the dev box on Node 25; CI pins Node 22. 22-LTS in
+3. **Dev/CI Node divergence.** `NOTES.md` records the dev box on Node 25; CI pins Node 22. 22-LTS in
    CI is fine, but a two-major gap can mask issues either direction. Intentional is fine — worth one
-   line in `notes.md` on why 22, so it reads as a choice, not drift.
+   line in `NOTES.md` on why 22, so it reads as a choice, not drift.
 
 4. **Nit — scaffold leftovers.** `App.tsx` is still the stock Vite "Get started" template (react/vite
    logos, `hero.png`), and both smoke tests assert on that scaffold text. Expected at Phase 0 and the
@@ -200,6 +200,6 @@ tool-use for structured IR) are the right calls and bode well for Phase 1.
    be replaced, not carried forward.
 
 ### Spot-check on a thing I expected to bite — and didn't
-- Model id `claude-sonnet-4-6` in `.env.example` / `notes.md` is the correct current Sonnet 4.6 id.
-  `notes.md` flagged it "to confirm at implementation time" — confirmed correct. Keep it in config
+- Model id `claude-sonnet-4-6` in `.env.example` / `NOTES.md` is the correct current Sonnet 4.6 id.
+  `NOTES.md` flagged it "to confirm at implementation time" — confirmed correct. Keep it in config
   (it already is) so it stays swappable.
