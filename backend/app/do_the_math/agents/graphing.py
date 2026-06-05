@@ -8,7 +8,6 @@ render -> envelope. It owns no math itself; future agents reuse the same core.
 from __future__ import annotations
 
 import logging
-import os
 
 import pydantic
 
@@ -21,12 +20,6 @@ from ..math_engine import derive
 from .base import Request
 
 logger = logging.getLogger(__name__)
-
-# Per-graph LLM phrasing makes each result line fresh wording, but costs a second
-# Anthropic call per graph. It's OFF by default to conserve API tokens during
-# testing; the code path below is fully preserved. Re-enable by flipping this to
-# True, or by setting DTM_LLM_SUMMARIES=1 in the environment.
-LLM_SUMMARIES_ENABLED = os.getenv("DTM_LLM_SUMMARIES", "0").lower() in ("1", "true", "yes")
 
 # Kinds this agent graphs. In v1 this is the whole IR vocabulary, so the agent
 # also claims requests whose kind is missing/unknown — that's how it gets the
@@ -79,15 +72,16 @@ class GraphingAgent:
 
         # 4. Render to a Plotly spec and return the graph envelope.
         figure = render(derived)
-        explanation = _summarize(request.provider, intent, derived)
+        explanation = _summarize(request.provider, intent, derived, request.use_llm_summary)
         return Envelope.graph(figure, derived.equation, ir=raw, explanation=explanation)
 
 
-def _summarize(provider, intent, derived) -> str:
-    """Ask the model to phrase the result for variety; fall back to a written
-    line if phrasing is disabled, there's no provider, or the call fails. The
-    facts are SymPy-verified, so the model only rephrases — it never owns the math."""
-    if LLM_SUMMARIES_ENABLED and provider is not None:
+def _summarize(provider, intent, derived, use_llm: bool) -> str:
+    """Ask the model to phrase the result for variety (when the user opted in);
+    fall back to a written line if phrasing is off, there's no provider, or the
+    call fails. The facts are SymPy-verified — the model only rephrases, never
+    owns the math."""
+    if use_llm and provider is not None:
         try:
             text = provider.write_summary(summary_facts(intent, derived))
             if text and text.strip():

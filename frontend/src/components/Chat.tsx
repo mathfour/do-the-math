@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { postChat } from '../lib/api'
+import { getLlmSummaries } from '../lib/storage'
 import type { ChatTurn, Envelope } from '../types'
 import { AssistantMessage } from './AssistantMessage'
 
@@ -49,7 +50,7 @@ export function Chat({ apiKey }: { apiKey: string }) {
     setInput('')
     setLoading(true)
     try {
-      const envelope = await postChat(text, history, apiKey)
+      const envelope = await postChat(text, history, apiKey, getLlmSummaries())
       setMessages((prev) => [...prev, { id: nextId.current++, role: 'assistant', envelope }])
     } finally {
       // postChat is contractually non-throwing, but guard so a future change

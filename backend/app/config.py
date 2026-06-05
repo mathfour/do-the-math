@@ -22,6 +22,9 @@ class Settings:
     model: str
     env_api_key: str | None
     cors_origins: tuple[str, ...]
+    # Server-side default for LLM-written result lines, used when a request
+    # doesn't specify. The UI checkbox sends an explicit choice that overrides it.
+    llm_summaries_default: bool
 
 
 def get_settings() -> Settings:
@@ -30,6 +33,7 @@ def get_settings() -> Settings:
         model=os.getenv("ANTHROPIC_MODEL", DEFAULT_MODEL),
         env_api_key=os.getenv("ANTHROPIC_API_KEY") or None,
         cors_origins=tuple(o.strip() for o in origins.split(",") if o.strip()),
+        llm_summaries_default=os.getenv("DTM_LLM_SUMMARIES", "0").lower() in ("1", "true", "yes"),
     )
 
 

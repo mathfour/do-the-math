@@ -32,6 +32,8 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1)
     history: list[dict] | None = None
+    # Whether to have the LLM phrase the result line. None -> server default.
+    llm_summaries: bool | None = None
 
 
 @app.get("/health")
@@ -51,6 +53,11 @@ def chat(
             reason="missing_api_key",
         )
 
+    use_llm = (
+        request.llm_summaries
+        if request.llm_summaries is not None
+        else settings.llm_summaries_default
+    )
     adapter = AnthropicAdapter(api_key=api_key, model=settings.model)
     router = Router(MathInterpreter(adapter), build_default_registry())
-    return router.handle(request.message, request.history)
+    return router.handle(request.message, request.history, use_llm_summary=use_llm)

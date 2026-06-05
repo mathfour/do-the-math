@@ -14,13 +14,14 @@ export async function postChat(
   message: string,
   history: ChatTurn[],
   apiKey: string,
+  llmSummaries: boolean,
 ): Promise<Envelope> {
   let resp: Response
   try {
     resp = await fetch(`${API_BASE}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Anthropic-Key': apiKey },
-      body: JSON.stringify({ message, history }),
+      body: JSON.stringify({ message, history, llm_summaries: llmSummaries }),
     })
   } catch {
     return {

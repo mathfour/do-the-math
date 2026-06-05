@@ -22,7 +22,12 @@ class Router:
         self.interpreter = interpreter
         self.registry = registry
 
-    def handle(self, message: str, history: list[dict] | None = None) -> Envelope:
+    def handle(
+        self,
+        message: str,
+        history: list[dict] | None = None,
+        use_llm_summary: bool = False,
+    ) -> Envelope:
         try:
             raw_intent = self.interpreter.to_raw_intent(message, history)
         except Exception:  # provider/transport failure — never crash the app
@@ -46,6 +51,7 @@ class Router:
                 raw_intent=raw_intent,
                 history=history,
                 provider=self.interpreter.provider,
+                use_llm_summary=use_llm_summary,
             )
         )
 

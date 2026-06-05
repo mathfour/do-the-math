@@ -158,6 +158,19 @@
   gap: 6px;
 }
 
+.ai-responses {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.ai-responses input {
+  margin-top: 3px;
+}
+
 .key-field input,
 .composer input,
 .composer textarea {

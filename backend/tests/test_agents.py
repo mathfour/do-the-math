@@ -4,7 +4,7 @@ Wires interpreter -> agent -> engine -> renderer through a FakeProvider, so no
 network is touched.
 """
 
-from app.do_the_math.agents import AgentRegistry, GraphingAgent, Request, graphing
+from app.do_the_math.agents import AgentRegistry, GraphingAgent, Request
 from app.do_the_math.math_interpreter import MathInterpreter
 from app.do_the_math.providers.fake import FakeProvider
 from app.do_the_math.router import Router, build_default_registry
@@ -95,26 +95,26 @@ def test_request_carries_message_and_raw_intent():
     assert env.type == "graph"
 
 
-def test_graph_explanation_uses_provider_summary(monkeypatch):
-    monkeypatch.setattr(graphing, "LLM_SUMMARIES_ENABLED", True)
+def test_graph_explanation_uses_provider_summary_when_opted_in():
     provider = FakeProvider(
         {"kind": "parabola_vertex_direction", "vertex": [1, 2], "direction": "up"},
         summary="Ta-da — one parabola!",
     )
-    env = Router(MathInterpreter(provider), build_default_registry()).handle("p")
+    env = Router(MathInterpreter(provider), build_default_registry()).handle(
+        "p", use_llm_summary=True
+    )
     assert env.type == "graph"
     assert env.explanation == "Ta-da — one parabola!"
     # The model was handed SymPy-verified facts, including the pretty equation.
     assert provider.summary_calls[0]["equation"] == "y = (x − 1)² + 2"
 
 
-def test_llm_summary_disabled_uses_written_line(monkeypatch):
-    monkeypatch.setattr(graphing, "LLM_SUMMARIES_ENABLED", False)
+def test_llm_summary_off_uses_written_line():
     provider = FakeProvider(
         {"kind": "parabola_vertex_direction", "vertex": [1, 2], "direction": "up"},
         summary="SHOULD NOT BE USED",
     )
-    env = Router(MathInterpreter(provider), build_default_registry()).handle("p")
+    env = Router(MathInterpreter(provider), build_default_registry()).handle("p")  # default off
     assert env.type == "graph"
     assert env.explanation != "SHOULD NOT BE USED"
     assert not provider.summary_calls  # the model was never asked to phrase
@@ -126,6 +126,7 @@ def test_graph_explanation_falls_back_without_provider():
             message="p",
             raw_intent={"kind": "parabola_vertex_direction", "vertex": [1, 2], "direction": "up"},
             provider=None,
+            use_llm_summary=True,
         )
     )
     assert env.type == "graph"
@@ -133,15 +134,13 @@ def test_graph_explanation_falls_back_without_provider():
     assert "y = (x − 1)²" in env.explanation
 
 
-def test_graph_explanation_falls_back_when_provider_summary_errors(monkeypatch):
-    monkeypatch.setattr(graphing, "LLM_SUMMARIES_ENABLED", True)
-
+def test_graph_explanation_falls_back_when_provider_summary_errors():
     class Boom(FakeProvider):
         def write_summary(self, facts):
             raise RuntimeError("model down")
 
     env = Router(
         MathInterpreter(Boom({"kind": "trig", "func": "sin"})), build_default_registry()
-    ).handle("p")
+    ).handle("p", use_llm_summary=True)
     assert env.type == "graph"
     assert "sine wave" in env.explanation  # fell back to the written line

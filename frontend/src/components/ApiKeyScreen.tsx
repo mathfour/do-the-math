@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { setApiKey } from '../lib/storage'
+import { getLlmSummaries, setApiKey, setLlmSummaries } from '../lib/storage'
 import { BroughtBy } from './BroughtBy'
 
 // All planned providers are shown so the model-agnostic direction is visible;
@@ -14,12 +14,14 @@ const PROVIDERS = [
 export function ApiKeyScreen({ onSubmit }: { onSubmit: (key: string) => void }) {
   const [key, setKey] = useState('')
   const [provider, setProvider] = useState('anthropic')
+  const [aiResponses, setAiResponses] = useState(() => getLlmSummaries())
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     const trimmed = key.trim()
     if (!trimmed) return
     setApiKey(trimmed)
+    setLlmSummaries(aiResponses)
     onSubmit(trimmed)
   }
 
@@ -59,6 +61,18 @@ export function ApiKeyScreen({ onSubmit }: { onSubmit: (key: string) => void }) 
             autoComplete="off"
             aria-label="Anthropic API key"
           />
+        </label>
+
+        <label className="ai-responses">
+          <input
+            type="checkbox"
+            checked={aiResponses}
+            onChange={(e) => setAiResponses(e.target.checked)}
+          />
+          <span>
+            Let the AI write the result lines (more conversational, uses more of your API tokens).
+            Off keeps the standard written responses.
+          </span>
         </label>
 
         <button type="submit" disabled={!key.trim()}>

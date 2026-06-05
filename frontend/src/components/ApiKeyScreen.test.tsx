@@ -2,9 +2,12 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ApiKeyScreen } from './ApiKeyScreen'
-import { getApiKey } from '../lib/storage'
+import { getApiKey, getLlmSummaries } from '../lib/storage'
 
-afterEach(() => localStorage.removeItem('do-the-math:anthropic-key'))
+afterEach(() => {
+  localStorage.removeItem('do-the-math:anthropic-key')
+  localStorage.removeItem('do-the-math:llm-summaries')
+})
 
 describe('ApiKeyScreen', () => {
   it('lists all planned providers with only Anthropic selectable', () => {
@@ -36,5 +39,17 @@ describe('ApiKeyScreen', () => {
   it('disables submit until a key is entered', () => {
     render(<ApiKeyScreen onSubmit={vi.fn()} />)
     expect(screen.getByRole('button', { name: /start graphing/i })).toBeDisabled()
+  })
+
+  it('persists the AI-responses choice (off by default)', async () => {
+    render(<ApiKeyScreen onSubmit={vi.fn()} />)
+    const checkbox = screen.getByRole('checkbox', { name: /let the ai write/i })
+    expect(checkbox).not.toBeChecked()
+
+    await userEvent.click(checkbox)
+    await userEvent.type(screen.getByLabelText(/anthropic api key/i), 'sk-ant-xyz')
+    await userEvent.click(screen.getByRole('button', { name: /start graphing/i }))
+
+    expect(getLlmSummaries()).toBe(true)
   })
 })

@@ -24,6 +24,7 @@ class Request:
     raw_intent: dict
     history: list[dict] | None = None
     provider: ProviderAdapter | None = None
+    use_llm_summary: bool = False
 
 
 @runtime_checkable

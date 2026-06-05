@@ -53,6 +53,22 @@ def test_chat_happy_path_returns_graph(fake_adapter):
     assert body["payload"]["equation"] == "y = (x - 1)**2 + 2"
 
 
+def test_llm_summaries_flag_is_honored(fake_adapter):
+    fake_adapter.update({"kind": "trig", "func": "sin"})
+    # Default (omitted) -> off -> deterministic written line.
+    off = client.post(
+        "/chat", json={"message": "sine"}, headers={"X-Anthropic-Key": "sk-test"}
+    ).json()
+    assert "for you" not in off["explanation"]  # FakeProvider.write_summary not called
+    # Opt in -> the provider phrases it (FakeProvider returns "Here's ... for you.").
+    on = client.post(
+        "/chat",
+        json={"message": "sine", "llm_summaries": True},
+        headers={"X-Anthropic-Key": "sk-test"},
+    ).json()
+    assert "for you" in on["explanation"]
+
+
 def test_chat_clarification_path(fake_adapter):
     fake_adapter.update({"kind": "parabola_vertex_direction", "direction": "up"})
     resp = client.post(
