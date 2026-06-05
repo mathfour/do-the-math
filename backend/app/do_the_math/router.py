@@ -40,7 +40,14 @@ class Router:
             return Envelope.error(
                 "No agent can handle that kind of request yet.", reason="no_agent"
             )
-        return agent.execute(Request(message=message, raw_intent=raw_intent, history=history))
+        return agent.execute(
+            Request(
+                message=message,
+                raw_intent=raw_intent,
+                history=history,
+                provider=self.interpreter.provider,
+            )
+        )
 
 
 def build_default_registry() -> AgentRegistry:

@@ -8,6 +8,78 @@ Verdict legend: ✅ approved to proceed · 🟡 approved with follow-ups · 🔴
 
 ---
 
+## Phase 2 — Front end & chat UI
+
+**Verdict: ✅ approved to proceed to Phase 3.** (reviewed 2026-06-05, commit `fd87243`)
+
+Reviewed against an isolated worktree pinned to `fd87243` (Claude was concurrently editing CSS
+colors on `main`, so I deliberately did **not** review the live working tree — these notes reflect
+the committed Phase 2 state only). Clean, well-factored React: a key gate, a chat loop, and uniform
+envelope rendering with a reasoning panel that surfaces exactly the IR→equation narrative the demo
+needs. Strong phase.
+
+### What I verified (re-run in the pinned worktree)
+- `tsc -b --noEmit` clean · `eslint` clean · `prettier --check` clean · **Vitest 12/12 pass** ·
+  **Playwright e2e passes** (real chromium, first-run key screen).
+- **`npm ci` is consistent** — `plotly.js-dist-min` is in `package-lock.json`; `npm ci --dry-run`
+  reports "up to date", so CI's `npm ci` won't break on a stale lock.
+- Scaffold properly retired: `App.tsx` rewritten; `index.html` title = "Do the Math"; the old
+  "Get started" smoke assertions are gone (both unit `App.test.tsx` and `e2e/smoke.spec.ts` rewritten
+  to the new UI).
+
+### Against the SPEC Phase 2 checklist — all present
+- [x] React chat interface; renders user turns and agent responses across turns (`Chat.tsx`).
+- [x] First-run key screen lists **all four** providers; **Anthropic selectable**, OpenAI / Azure /
+      Gemini disabled with "Coming soon" badges; the "more providers coming" note is present.
+- [x] Key persisted to `localStorage` only, sent via `X-Anthropic-Key` to the local backend, never
+      elsewhere (`storage.ts`; asserted in `ApiKeyScreen.test` / `storage.test`).
+- [x] Envelope rendering: interactive Plotly `graph`; `clarification` question; readable
+      `explanation`; graceful `error` (with `role="alert"`).
+- [x] **Reasoning panel** surfaces the Math Intent (IR) + SymPy-derived equation (SPEC §9) — the
+      demo's "show the steps" requirement is built in, not bolted on later.
+
+### Phase 1 follow-ups — all four resolved (commit `77a17fe`)
+- [x] #1 Coverage gate relocated: `--cov` stays in `addopts`, `--cov-fail-under=80` moved to the CI
+      command — focused local runs no longer report as failing.
+- [x] #2 Interpreter error sanitized: router now logs the exception server-side and returns a fixed,
+      generic client message (no SDK/transport leak on a live key).
+- [x] #3 Clarification round-trip now tested end-to-end at `/chat` (underspecified → question →
+      answer-with-history → graph) — and the UI wires the same loop (`Chat.test` covers history
+      threading). Backend is up to 63 tests / 93%.
+- [x] #4 `parabola_three_points` degenerate cases give a clean "three distinct points" message.
+
+### Things I went looking for and was glad to find
+- **History stays role-alternating.** `send()` is disabled while `loading`, so you can't queue two
+  user turns; `toHistory` therefore yields strict user/assistant alternation, which the Anthropic
+  messages API requires. The clarification loop won't desync.
+- **`postChat` never throws** — network and non-200 are both converted to `error` envelopes, so the
+  UI has a single render path and no unhandled rejections.
+- Plotly is cleaned up on unmount (`Plotly.purge` in the effect's cleanup); jsdom-heavy Plotly is
+  stubbed in tests so unit runs stay fast and deterministic.
+
+### Follow-ups (none block Phase 3)
+
+1. **Delete the dead scaffold assets.** `src/assets/{hero.png,react.svg,vite.svg}` are no longer
+   referenced anywhere in `src/` (grep is clean) — leftover Vite boilerplate. Harmless but untidy;
+   remove them (and any now-unused `App.css` scaffold rules) so the tree reads as intentional. Note:
+   Claude's in-flight CSS pass may already be touching this — worth confirming after it lands.
+
+2. **Add a `finally` around `setLoading(false)` in `Chat.send`.** Today it's safe because `postChat`
+   is contractually non-throwing — but if that contract ever changes, a thrown error would strand the
+   UI in "Working it out…" forever. One-line defensive guard.
+
+3. **Tighten envelope payload typing (optional).** `AssistantMessage` does
+   `payload as unknown as GraphPayload`. Works, but a discriminated union on `Envelope` (payload typed
+   per `type`) would drop the double-cast and catch shape drift at compile time. Nice-to-have.
+
+### Carried-forward (tracking; not Phase 2's job)
+- SPEC §8/§10 PR-merge boxes remain **WAIVED** (direct-to-`main`) — mark waived, not checked, at
+  final acceptance.
+- I reviewed the **committed** state; the live CSS color work was intentionally out of scope. I'll
+  pick up whatever lands there at the Phase 3 review.
+
+---
+
 ## Phase 1 — Shared math core & output contract
 
 **Verdict: ✅ approved to proceed to Phase 2.** (reviewed 2026-06-05, commit `1b430ed`)

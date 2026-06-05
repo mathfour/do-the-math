@@ -4,7 +4,7 @@ Wires interpreter -> agent -> engine -> renderer through a FakeProvider, so no
 network is touched.
 """
 
-from app.do_the_math.agents import AgentRegistry, GraphingAgent, Request
+from app.do_the_math.agents import AgentRegistry, GraphingAgent, Request, graphing
 from app.do_the_math.math_interpreter import MathInterpreter
 from app.do_the_math.providers.fake import FakeProvider
 from app.do_the_math.router import Router, build_default_registry
@@ -86,3 +86,55 @@ def test_request_carries_message_and_raw_intent():
     req = Request(message="hi", raw_intent={"kind": "trig", "func": "sin"})
     env = agent.execute(req)
     assert env.type == "graph"
+
+
+def test_graph_explanation_uses_provider_summary(monkeypatch):
+    monkeypatch.setattr(graphing, "LLM_SUMMARIES_ENABLED", True)
+    provider = FakeProvider(
+        {"kind": "parabola_vertex_direction", "vertex": [1, 2], "direction": "up"},
+        summary="Ta-da — one parabola!",
+    )
+    env = Router(MathInterpreter(provider), build_default_registry()).handle("p")
+    assert env.type == "graph"
+    assert env.explanation == "Ta-da — one parabola!"
+    # The model was handed SymPy-verified facts, including the pretty equation.
+    assert provider.summary_calls[0]["equation"] == "y = (x − 1)² + 2"
+
+
+def test_llm_summary_disabled_uses_written_line(monkeypatch):
+    monkeypatch.setattr(graphing, "LLM_SUMMARIES_ENABLED", False)
+    provider = FakeProvider(
+        {"kind": "parabola_vertex_direction", "vertex": [1, 2], "direction": "up"},
+        summary="SHOULD NOT BE USED",
+    )
+    env = Router(MathInterpreter(provider), build_default_registry()).handle("p")
+    assert env.type == "graph"
+    assert env.explanation != "SHOULD NOT BE USED"
+    assert not provider.summary_calls  # the model was never asked to phrase
+
+
+def test_graph_explanation_falls_back_without_provider():
+    env = GraphingAgent().execute(
+        Request(
+            message="p",
+            raw_intent={"kind": "parabola_vertex_direction", "vertex": [1, 2], "direction": "up"},
+            provider=None,
+        )
+    )
+    assert env.type == "graph"
+    assert "parabola" in env.explanation  # deterministic written line
+    assert "y = (x − 1)²" in env.explanation
+
+
+def test_graph_explanation_falls_back_when_provider_summary_errors(monkeypatch):
+    monkeypatch.setattr(graphing, "LLM_SUMMARIES_ENABLED", True)
+
+    class Boom(FakeProvider):
+        def write_summary(self, facts):
+            raise RuntimeError("model down")
+
+    env = Router(
+        MathInterpreter(Boom({"kind": "trig", "func": "sin"})), build_default_registry()
+    ).handle("p")
+    assert env.type == "graph"
+    assert "sine wave" in env.explanation  # fell back to the written line

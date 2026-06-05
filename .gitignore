@@ -38,3 +38,6 @@ playwright/.cache/
 .idea/
 .vscode/
 *.swp
+
+# Harness transient state
+.claude/scheduled_tasks.lock

@@ -58,6 +58,32 @@ def test_tolerates_flat_intent_without_wrapper(monkeypatch):
     assert adapter.complete_intent("sine") == {"kind": "trig", "func": "sin"}
 
 
+def test_recovers_intent_serialized_as_json_string(monkeypatch):
+    # The model sometimes serializes the intent object to a JSON string.
+    block = SimpleNamespace(
+        type="tool_use",
+        name="submit_math_intent",
+        input={"intent": '{"kind": "linear_direct", "slope": 2, "intercept": 1}'},
+    )
+    _install_fake(monkeypatch, [block])
+    adapter = AnthropicAdapter(api_key="sk-test", model="claude-sonnet-4-6")
+    assert adapter.complete_intent("a line") == {
+        "kind": "linear_direct",
+        "slope": 2,
+        "intercept": 1,
+    }
+
+
+def test_non_json_string_intent_raises(monkeypatch):
+    block = SimpleNamespace(
+        type="tool_use", name="submit_math_intent", input={"intent": "parabola"}
+    )
+    _install_fake(monkeypatch, [block])
+    adapter = AnthropicAdapter(api_key="sk-test", model="claude-sonnet-4-6")
+    with pytest.raises(RuntimeError):
+        adapter.complete_intent("?")
+
+
 def test_history_is_prepended(monkeypatch):
     block = SimpleNamespace(
         type="tool_use", name="submit_math_intent", input={"kind": "trig", "func": "cos"}
@@ -80,3 +106,19 @@ def test_missing_tool_call_raises(monkeypatch):
 def test_empty_api_key_rejected():
     with pytest.raises(ValueError):
         AnthropicAdapter(api_key="", model="claude-sonnet-4-6")
+
+
+def test_write_summary_returns_model_text(monkeypatch):
+    block = SimpleNamespace(type="text", text="  Here's your parabola!  ")
+    _install_fake(monkeypatch, [block])
+    adapter = AnthropicAdapter(api_key="sk-test", model="claude-sonnet-4-6")
+    out = adapter.write_summary({"shape": "parabola", "equation": "y = x²", "details": "opens up"})
+    assert out == "Here's your parabola!"  # trimmed
+
+
+def test_write_summary_empty_response_raises(monkeypatch):
+    block = SimpleNamespace(type="text", text="   ")
+    _install_fake(monkeypatch, [block])
+    adapter = AnthropicAdapter(api_key="sk-test", model="claude-sonnet-4-6")
+    with pytest.raises(RuntimeError):
+        adapter.write_summary({"shape": "line", "equation": "y = x", "details": ""})

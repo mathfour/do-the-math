@@ -51,6 +51,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px;
+  box-shadow: 0 2px 10px rgba(26, 111, 163, 0.1);
 }
 
 .providers {
@@ -111,7 +112,7 @@
 .key-form button,
 .composer button {
   background: var(--accent);
-  color: #08101f;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 10px 14px;
@@ -160,6 +161,7 @@
   border-radius: 12px 12px 12px 2px;
   padding: 12px 14px;
   max-width: 95%;
+  box-shadow: 0 2px 10px rgba(26, 111, 163, 0.08);
 }
 
 .explanation {

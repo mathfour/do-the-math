@@ -12,15 +12,18 @@ from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 from ..ir import Envelope
+from ..providers.base import ProviderAdapter
 
 
 @dataclass(frozen=True)
 class Request:
-    """What an agent needs to execute: the message, the raw IR, and history."""
+    """What an agent needs to execute: the message, the raw IR, history, and the
+    provider (so an agent can ask the model to phrase its result)."""
 
     message: str
     raw_intent: dict
     history: list[dict] | None = None
+    provider: ProviderAdapter | None = None
 
 
 @runtime_checkable

@@ -293,3 +293,41 @@ def derive(intent: MathIntent) -> DerivedFunction:
     return DerivedFunction(
         expr=expr, equation=equation, kind=intent.kind, domain=_natural_domain(expr)
     )
+
+
+def real_solutions(expr: sp.Expr) -> list[float]:
+    """Sorted real, finite numeric solutions of ``expr == 0`` (best-effort).
+
+    For polynomials, uses real-root isolation, which stays correct in the
+    *casus irreducibilis* — where three real cubic roots come back in complex
+    radical form that ``.is_real`` cannot classify (it returns ``None``), so a
+    naive ``solve`` + ``is_real`` filter silently drops them. Non-polynomials
+    fall back to ``solve`` with a numeric realness check.
+    """
+    if not getattr(expr, "free_symbols", None):
+        return []
+    try:
+        poly = sp.Poly(expr, x)
+    except (sp.PolynomialError, TypeError):
+        poly = None
+    if poly is not None and poly.degree() >= 1:
+        try:
+            return sorted(float(r) for r in sp.real_roots(poly))
+        except (TypeError, ValueError, NotImplementedError):
+            pass
+
+    try:
+        candidates = sp.solve(sp.Eq(expr, 0), x)
+    except (NotImplementedError, ValueError, TypeError, RecursionError):
+        return []
+    if not isinstance(candidates, (list, tuple)):  # e.g. a ConditionSet
+        return []
+    out: list[float] = []
+    for sol in candidates:
+        try:
+            value = complex(sol.evalf())
+        except (TypeError, ValueError):
+            continue
+        if abs(value.imag) < 1e-9:
+            out.append(float(value.real))
+    return sorted(out)

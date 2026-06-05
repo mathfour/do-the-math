@@ -4,7 +4,7 @@ import type { GraphPayload } from '../types'
 // Intent (IR) the LLM produced, and the equation SymPy derived from it.
 export function ReasoningPanel({ payload }: { payload: GraphPayload }) {
   return (
-    <details className="reasoning" open>
+    <details className="reasoning">
       <summary>How this was derived</summary>
       <div className="reasoning-step">
         <span className="reasoning-label">1. Math Intent (from your words)</span>

@@ -37,9 +37,14 @@ export function Chat({ apiKey }: { apiKey: string }) {
     setMessages((prev) => [...prev, { id: nextId.current++, role: 'user', text }])
     setInput('')
     setLoading(true)
-    const envelope = await postChat(text, history, apiKey)
-    setMessages((prev) => [...prev, { id: nextId.current++, role: 'assistant', envelope }])
-    setLoading(false)
+    try {
+      const envelope = await postChat(text, history, apiKey)
+      setMessages((prev) => [...prev, { id: nextId.current++, role: 'assistant', envelope }])
+    } finally {
+      // postChat is contractually non-throwing, but guard so a future change
+      // can never strand the UI in the loading state.
+      setLoading(false)
+    }
   }
 
   return (

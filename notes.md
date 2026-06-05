@@ -45,6 +45,14 @@ Three docs (decided 2026-06-05):
     - **In-memory `localStorage` shim in `src/test/setup.ts`** — this jsdom build ships a non-functional `Storage`.
     - **Bundle size:** plotly makes the JS bundle ~4.8 MB (1.4 MB gzipped). Fine for a local demo; a dynamic-import code-split is a possible Phase 5 optimization (noted, not done).
     - Backend dev port assumed **8000** (`api.ts` default; overridable via `VITE_API_BASE`); CORS already allows the Vite origin. Run commands documented in Phase 4.
+  - **Phase 2 live-testing tweaks (with the author, 2026-06-05)** — done while running the real slice in the browser:
+    - **MathFour branding:** page background `#E5F7FD`, white cards, near-black text, accent `#1A6FA3` (light theme).
+    - **Adapter robustness:** the model sometimes returns the tool input's `intent` as a JSON *string*; `_extract_intent` now parses it (and reports/loggs anything truly malformed instead of crashing). Caught only because we live-tested — mocked units couldn't see it.
+    - **Feature-aware graph window + y-range:** frame the x-window on turning points (roots fallback), and for wiggly polynomials (≥2 turning points) frame the y-axis on the local extrema so steep tails clip instead of flattening the shape. Fixes "cubic looks flat", far-from-origin vertices, etc.
+    - **Robust real roots (`math_engine.real_solutions`):** polynomial root isolation, correct in the *casus irreducibilis* (cubic/quartic derivatives whose real roots come back in complex form that `.is_real` can't classify). Fixes turning-point counts (was "0"/"1") and windows for quartics+.
+    - **Conversational result line (`describe.py`):** playful, shape-aware opener + a short SymPy-computed note (vertex/slope/period/turning points). Pretty equations via `formatting.pretty_equation` (`·`, superscripts, real `−`, `ln`) — used in the line **and** the graph title; the reasoning panel keeps the canonical SymPy form. Reasoning panel collapsed by default.
+    - **LLM-written result line:** provider gains `write_summary(facts)`; the agent asks the model to rephrase **SymPy-verified facts** (never inventing numbers) for fresh wording each graph, falling back to the deterministic line. **Toggled OFF by default** (`graphing.LLM_SUMMARIES_ENABLED` / env `DTM_LLM_SUMMARIES`) to save the author's API tokens during testing — flip on to re-enable. Decision: keep the code, gate it behind a flag rather than delete.
+    - **Interpreter prompt:** honor stated polynomial degree/order ("fourth-order" → degree 4) and build "lots of hills and valleys" from polynomials with several distinct real roots. (Prompt nudge, not a hard guarantee — a "polynomial by roots" IR was offered as a bulletproof follow-up; not yet taken.)
 - **Phase 1 — Shared math core & output contract:** _complete (Clarice-approved; live check deferred to Phase 2/3)._
   - `ir.py` (discriminated-union IR + Envelope), `math_engine.py` (SymPy derive), `graph_renderer.py` (Plotly dict), `clarification.py`, provider seam (`base`/`fake`/`anthropic_adapter` via tool-use), `math_interpreter`, agent registry + `GraphingAgent`, `router`, `config`, FastAPI `POST /chat` + `/health`.
   - **60 backend tests, 93% coverage** (gate set to fail under 80%). Anthropic adapter tested with the network mocked.
@@ -73,6 +81,11 @@ Three docs (decided 2026-06-05):
 
 ## Clarice review log
 
+- **Phase 2 — APPROVED** (proceed to Phase 3), reviewed at committed state `fd87243` in an isolated worktree (live CSS work was deliberately out of her scope; she'll pick it up at Phase 3 review). Three non-blocking follow-ups:
+  1. **Delete dead scaffold assets** (`src/assets/{hero.png,react.svg,vite.svg}`) → done (`git rm`).
+  2. **`finally` around `setLoading(false)` in `Chat.send`** → done (guard so a future throwing `postChat` can't strand the UI in loading).
+  3. **Tighter envelope payload typing** (discriminated union to drop the `as unknown as GraphPayload` cast) → _optional / deferred_; noted as a nice-to-have.
+  - Carried forward: SPEC §8/§10 PR boxes stay **waived**.
 - **Phase 1 — APPROVED** (proceed to Phase 2). Four non-blocking follow-ups, all addressed before Phase 2:
   1. **Coverage-gate ergonomics** → moved `--cov-fail-under=80` out of `pyproject` `addopts` (which made focused runs like `pytest tests/test_ir.py` "fail" for under-covering the app) into the CI pytest command. `--cov` stays in addopts; enforcement stays in CI.
   2. **Sanitized interpreter-error envelope** → `router.handle` now logs the exception server-side (`logger.exception`) and returns a fixed, friendly message instead of interpolating the raw exception (no SDK/transport leakage on a live key).

@@ -1,14 +1,14 @@
 :root {
-  --bg: #0f1117;
-  --panel: #181b24;
-  --panel-2: #20242f;
-  --text: #e7e9ee;
-  --muted: #9aa3b2;
-  --accent: #5b8cff;
-  --accent-weak: #2a3a66;
-  --error: #ff6b6b;
-  --ok: #54d18c;
-  --border: #2a2f3a;
+  --bg: #e5f7fd; /* MathFour page background */
+  --panel: #ffffff; /* cards: key form, provider box, message bubbles */
+  --panel-2: #eff8fc; /* inputs, code/IR blocks (subtle tint on white) */
+  --text: #14181f; /* near-black body text */
+  --muted: #51606e;
+  --accent: #1a6fa3; /* readable blue for buttons/links on white */
+  --accent-weak: #cfe7f3; /* user message bubble */
+  --error: #c0392b;
+  --ok: #167a43;
+  --border: #bbddec;
   font-family:
     ui-sans-serif,
     system-ui,
@@ -18,7 +18,7 @@
     Helvetica,
     Arial,
     sans-serif;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {

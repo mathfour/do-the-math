@@ -23,3 +23,11 @@ class ProviderAdapter(Protocol):
         to complete a clarification (Phase 1 resolves only the active request).
         """
         ...
+
+    def write_summary(self, facts: dict) -> str:
+        """Phrase SymPy-verified ``facts`` into one friendly sentence.
+
+        The model only rephrases — it must not invent or change any numbers.
+        SymPy remains the source of mathematical truth.
+        """
+        ...
