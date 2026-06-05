@@ -37,6 +37,9 @@ Three docs (decided 2026-06-05):
 
 ## Phase status
 
+- **Phase 4 — Local run & sharing:** _in progress._
+  - `./run.sh` (repo root) installs both halves (`uv sync` + `npm install`), starts the backend (port 8000) + frontend, and opens the app in the browser (`vite --open`); Ctrl+C stops both. README "Running locally" documents it + the manual two-terminal alternative. Prereqs: `uv`, Node 20.19+/22.12+.
+  - Key entered in the UI (no `.env` needed for a fresh clone). Fresh-clone install + build + tests verified.
 - **Phase 3 — Vertical slice complete & demo capture:** _complete (Clarice-approved → Phase 4)._
   - **Playwright E2E** built against a mocked `/chat` (route interception + CORS preflight handling, no live billing): happy path (key → request → graph, then expand reasoning panel → IR + equation), clarification loop (question → answer → graph), out-of-scope error path. 4 E2E specs total (incl. the key-screen smoke).
   - **Demo:** `/demo/README.md` capture guide (exact prompts + filenames); main README has a Demo section referencing `demo/{ready-state,graph-result}.png` + `demo/slice.gif`. **Author captures these manually** (decision 2026-06-05); **LLM result line kept OFF** for captures.

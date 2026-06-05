@@ -133,7 +133,28 @@ Full slice in motion — request → IR → SymPy derivation → graph:
 
 ## Running locally
 
-> ⏳ Coming in Phase 4 — a single documented command to install and launch, opening in the browser. Until then, see [NOTES.md](NOTES.md) for current build status.
+**Prerequisites:** [uv](https://docs.astral.sh/uv/) (manages Python) and [Node.js](https://nodejs.org/) 20.19+ / 22.12+.
+
+From the repo root:
+
+```bash
+./run.sh
+```
+
+This installs dependencies for both halves, starts the backend (port 8000) and the frontend, and opens the app in your browser. On first run, choose **Anthropic**, paste your [Anthropic API key](https://console.anthropic.com/), and start graphing — your key is stored in your browser and sent only to Anthropic (via the local backend). Press **Ctrl+C** to stop.
+
+<details>
+<summary>Prefer to run the two halves yourself?</summary>
+
+```bash
+# Terminal 1 — backend (http://localhost:8000)
+cd backend && uv sync && uv run uvicorn app.main:app --port 8000
+
+# Terminal 2 — frontend (http://localhost:5173)
+cd frontend && npm install && npm run dev
+```
+
+</details>
 
 ---
 
