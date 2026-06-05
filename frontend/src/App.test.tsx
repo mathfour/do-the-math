@@ -50,4 +50,18 @@ describe('App key gate', () => {
     expect(screen.getByText(/replies:/i)).toHaveTextContent(/ai-written/i)
     expect(localStorage.getItem(LLM)).toBe('1')
   })
+
+  it('opens the reply-wording info popover on click and closes it again', async () => {
+    localStorage.setItem(KEY, 'sk-ant-xyz')
+    render(<App />)
+
+    const info = screen.getByRole('button', { name: /what does this mean/i })
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+
+    await userEvent.click(info)
+    expect(screen.getByRole('tooltip')).toHaveTextContent(/computed exactly/i)
+
+    await userEvent.click(info)
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+  })
 })
