@@ -17,6 +17,14 @@ export default function App() {
   const [infoOpen, setInfoOpen] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
   const infoRef = useRef<HTMLSpanElement>(null)
+  const feedbackTriggerRef = useRef<HTMLButtonElement>(null)
+  const wasFeedbackOpen = useRef(false)
+
+  // Return focus to the "Send feedback" trigger when the feedback view closes.
+  useEffect(() => {
+    if (wasFeedbackOpen.current && !showFeedback) feedbackTriggerRef.current?.focus()
+    wasFeedbackOpen.current = showFeedback
+  }, [showFeedback])
 
   // Close the info popover on an outside click or Escape.
   useEffect(() => {
@@ -83,12 +91,13 @@ export default function App() {
                 className="info-icon"
                 aria-label="What does this mean?"
                 aria-expanded={infoOpen}
+                aria-describedby={infoOpen ? 'reply-info' : undefined}
                 onClick={() => setInfoOpen((open) => !open)}
               >
                 ⓘ
               </button>
               {infoOpen && (
-                <span className="info-popover" role="tooltip">
+                <span className="info-popover" role="tooltip" id="reply-info">
                   {REPLY_TOOLTIP}
                 </span>
               )}
@@ -98,7 +107,12 @@ export default function App() {
             </button>
           </span>
           <div className="header-actions">
-            <button type="button" className="link-button" onClick={() => setShowFeedback(true)}>
+            <button
+              ref={feedbackTriggerRef}
+              type="button"
+              className="link-button"
+              onClick={() => setShowFeedback(true)}
+            >
               Send feedback
             </button>
             <button type="button" className="link-button" onClick={logOut}>

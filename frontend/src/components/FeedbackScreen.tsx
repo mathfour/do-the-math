@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FEEDBACK_EMAIL, FEEDBACK_URL } from '../lib/feedback'
 import { BroughtBy } from './BroughtBy'
 
@@ -6,6 +6,12 @@ import { BroughtBy } from './BroughtBy'
 // to reach the author: a pre-filled GitHub issue, or a copyable email address.
 export function FeedbackScreen({ onBack }: { onBack: () => void }) {
   const [copied, setCopied] = useState(false)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+
+  // Move focus into the new view so keyboard/screen-reader users land here.
+  useEffect(() => {
+    headingRef.current?.focus()
+  }, [])
 
   async function copyEmail() {
     try {
@@ -18,7 +24,9 @@ export function FeedbackScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="key-screen">
-      <h1>Do the Math</h1>
+      <h1 ref={headingRef} tabIndex={-1}>
+        Do the Math
+      </h1>
       <p className="tagline">We’d love your feedback.</p>
 
       <div className="feedback-card">

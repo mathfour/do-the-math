@@ -70,6 +70,8 @@ describe('App key gate', () => {
     render(<App />)
 
     await userEvent.click(screen.getByRole('button', { name: /send feedback/i }))
+    // Focus moves into the new view (its heading).
+    expect(screen.getByRole('heading', { name: /do the math/i })).toHaveFocus()
     // Both options are offered on the branded screen.
     expect(screen.getByRole('link', { name: /github issue/i })).toHaveAttribute(
       'href',
@@ -79,5 +81,7 @@ describe('App key gate', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /back/i }))
     expect(screen.getByLabelText(/describe a graph/i)).toBeInTheDocument()
+    // Focus returns to the trigger.
+    expect(screen.getByRole('button', { name: /send feedback/i })).toHaveFocus()
   })
 })

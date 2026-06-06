@@ -8,6 +8,61 @@ Verdict legend: ✅ approved to proceed · 🟡 approved with follow-ups · 🔴
 
 ---
 
+## Phase 5 — post-v1 hardening (property tests, robustness, feedback)
+
+**Verdict: ✅ approved.** Strong hardening pass — the property tests earn their keep (two real bugs
+caught), the robustness contract is the right one, and the feedback feature is self-contained.
+(reviewed 2026-06-06, range `1b7072a..5e54747`)
+
+### What I verified (re-run at HEAD)
+- **Backend 113 tests / 93% coverage**, ruff + black clean. **Frontend 21 unit + 4 E2E**,
+  tsc/eslint/prettier clean. `hypothesis>=6.100` declared as a dev dep; in `uv.lock`.
+- **Both bug fixes are correct:**
+  - `_guard` bare-symbol fix — re-probed the boundary: accepts `x`, `2x+1`, `sin(x)`, constants;
+    still rejects `x>0`, `Eq`, `And/Or/Not`, `True`. Pinned by guard + engine + full-slice
+    (`y = x` through `/chat`) tests — incl. the end-to-end regression I asked for last round.
+  - Unhashable-kind crash — `check_required` now does `isinstance(kind, str)` *before* the `in`
+    lookup, so `{"kind": ["x"]}` degrades to the "what kind?" clarification instead of a 500.
+    API-level parametrized tests confirm malformed IR → 200.
+
+### The property suite (the heart of this phase)
+Well-targeted invariants, each guarding the trust boundary for *any* input, not just examples:
+displayed-equation round-trips to the exact expression · exact arithmetic (no stray `Float`) ·
+degree-n polynomial has 0…n−1 turning points · rendered figures always JSON-safe (finite-or-None,
+exercising tan asymptote masking + log domain clamping) · degenerate inputs always raise · and the
+robustness property — **any** raw IR yields a valid envelope, never an exception. This is exactly
+the right use of property testing for a "the math is always correct" system.
+
+### On Claude's three "worth a look" items
+1. **`_guard` narrowing** — correct and now pinned by properties; no scope hole. ✓
+2. **Robustness contract ("valid envelope for any IR")** — yes, this is the right invariant for v1:
+   the agent must never throw on malformed model output, only degrade to clarification/error/help.
+   Both layers are covered (agent-level property + `/chat` API tests). Endorsed.
+3. **Feedback as a `showFeedback` branch in `App.tsx`, not a router** — fine for three top-level
+   views (key / chat / feedback). Introduce a router only when a 4th view or deep-linking (shareable
+   URLs) appears. Not worth the dependency now. Feedback itself is clean: no backend, no third party
+   beyond GitHub + the author's own email, clipboard with a graceful fallback, no data collected.
+
+### On the deferred item (#4 accessibility) — my input, since asked
+Worth doing, and a good next hardening target for a tool aimed at students/teachers. Concrete scope
+I'd suggest, in rough priority:
+- **An `aria-live="polite"` region around the messages list** so a new graph/clarification/error is
+  announced to screen readers (right now results render silently).
+- **Make the graph's `aria-label` the equation**, not the generic "graph" — e.g. "Graph of
+  y = (x − 1)² + 2" — so the one piece of non-text content carries its meaning.
+- **Focus management** for the feedback/info overlays: move focus into the view on open and return
+  it to the trigger on close. (The info popover already handles Escape + outside-click — good start.)
+- Keyboard-only pass over the composer, toggle, and folds (the `<details>` panels are natively fine).
+
+None of these block anything; they're the right content for an a11y phase.
+
+### Follow-ups
+- 🟢 Nothing blocking. The only carry-over from v1 still worth confirming is the **README install
+  folds rendering on GitHub** (v1 #1) — separate from this bundle, still worth eyeballing on the
+  rendered page if not already done.
+
+---
+
 ## Interim — `_guard` bare-symbol fix (math-truth boundary)
 
 **Spot-checked 2026-06-06 — confirmed sound.** Not a phase boundary; Claude flagged it as an FYI

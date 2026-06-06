@@ -17,5 +17,14 @@ export function GraphView({ figure }: { figure: PlotlyFigure }) {
     return () => Plotly.purge(el)
   }, [figure])
 
-  return <div className="graph" ref={ref} role="img" aria-label="graph" />
+  // Announce the actual equation to screen readers, not a generic "graph".
+  const title = (figure.layout.title as { text?: string } | undefined)?.text
+  return (
+    <div
+      className="graph"
+      ref={ref}
+      role="img"
+      aria-label={title ? `Graph of ${title}` : 'Graph'}
+    />
+  )
 }

@@ -16,7 +16,7 @@ const graphEnvelope: Envelope = {
   type: 'graph',
   explanation: 'Interpreted your request and derived y = (x - 1)**2 + 2.',
   payload: {
-    figure: { data: [], layout: {} },
+    figure: { data: [], layout: { title: { text: 'y = (x − 1)² + 2' } } },
     equation: 'y = (x - 1)**2 + 2',
     ir: { kind: 'parabola_vertex_direction', vertex: [1, 2], direction: 'up' },
   },
@@ -30,6 +30,11 @@ async function sendMessage(text: string) {
 }
 
 describe('Chat', () => {
+  it('marks the messages list as a polite live region', () => {
+    render(<Chat apiKey="sk-test" />)
+    expect(screen.getByRole('log')).toHaveAttribute('aria-live', 'polite')
+  })
+
   it('renders the user turn and a graph response with reasoning', async () => {
     mockPostChat.mockResolvedValue(graphEnvelope)
     render(<Chat apiKey="sk-test" />)
@@ -37,7 +42,10 @@ describe('Chat', () => {
     await sendMessage('a parabola with vertex (1,2) up')
 
     expect(screen.getByText('a parabola with vertex (1,2) up')).toBeInTheDocument()
-    expect(await screen.findByRole('img', { name: /graph/i })).toBeInTheDocument()
+    // The graph announces the actual equation to screen readers.
+    expect(
+      await screen.findByRole('img', { name: /graph of y = \(x − 1\)² \+ 2/i }),
+    ).toBeInTheDocument()
     // Reasoning panel surfaces the derived equation and the IR.
     expect(screen.getByText('y = (x - 1)**2 + 2')).toBeInTheDocument()
     expect(screen.getByText(/parabola_vertex_direction/)).toBeInTheDocument()

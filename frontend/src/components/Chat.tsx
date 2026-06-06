@@ -61,7 +61,8 @@ export function Chat({ apiKey }: { apiKey: string }) {
 
   return (
     <div className="chat">
-      <div className="messages">
+      {/* A live region so new graph/clarification/error results are announced. */}
+      <div className="messages" role="log" aria-live="polite">
         {messages.length === 0 && (
           <div className="empty-hint">
             <p>What would you like me to graph?</p>
