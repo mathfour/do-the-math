@@ -83,7 +83,7 @@ User (browser chat UI)
 
 ```json
 {
-  "type": "graph | solution | proof | clarification | error",
+  "type": "graph | solution | proof | clarification | error | help",
   "payload": { },
   "explanation": "human-readable summary of what was done"
 }
