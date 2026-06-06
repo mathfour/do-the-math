@@ -53,6 +53,19 @@ def test_chat_happy_path_returns_graph(fake_adapter):
     assert body["payload"]["equation"] == "y = (x - 1)**2 + 2"
 
 
+def test_identity_line_y_equals_x_derives_and_renders(fake_adapter):
+    # Full-slice regression for the y = x guard bug: it must derive AND render
+    # through interpreter -> agent -> engine -> renderer -> envelope.
+    fake_adapter.update({"kind": "linear_direct", "slope": 1, "intercept": 0})
+    body = client.post(
+        "/chat", json={"message": "graph y = x"}, headers={"X-Anthropic-Key": "sk-test"}
+    ).json()
+    assert body["type"] == "graph"
+    assert body["payload"]["equation"] == "y = x"
+    ys = body["payload"]["figure"]["data"][0]["y"]
+    assert ys and any(v is not None for v in ys)  # actually rendered points
+
+
 def test_llm_summaries_flag_is_honored(fake_adapter):
     fake_adapter.update({"kind": "trig", "func": "sin"})
     # Default (omitted) -> off -> deterministic written line.

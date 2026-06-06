@@ -8,6 +8,21 @@ Verdict legend: ✅ approved to proceed · 🟡 approved with follow-ups · 🔴
 
 ---
 
+## Interim — `_guard` bare-symbol fix (math-truth boundary)
+
+**Spot-checked 2026-06-06 — confirmed sound.** Not a phase boundary; Claude flagged it as an FYI
+during v1 hardening and will fold it into the Phase 5 review. Logging because it touches the
+most important invariant.
+
+Hypothesis property tests (equation round-trip) caught a real one: `_guard` rejected `y = x`
+because a bare SymPy `Symbol` is itself a `Boolean` instance, so `isinstance(expr, Boolean)`
+false-positived. Narrowed to `is_Relational | BooleanFunction | BooleanAtom`. I re-ran the boundary
+both ways: **accepts** `x`, `2x+1`, `sin(x)`, constants; **still rejects** `x>0`, `Eq(x,1)`,
+`And/Or/Not`, `True`. Regression test added; suite green (~93%). Good catch — exactly the subclass
+gotcha property tests are for, and the narrowing is precise (no scope hole opened).
+
+---
+
 ## Phase 4 / v1 sign-off — local run, help intent, user-controlled summaries
 
 **Verdict: ✅ v1 signed off / shippable.** One thing to eyeball on GitHub (README folds, #1
