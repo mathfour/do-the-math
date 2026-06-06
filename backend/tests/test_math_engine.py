@@ -71,6 +71,19 @@ def test_float_normalized_to_rational():
     assert d.expr.coeff(x) == sp.Rational(1, 2)
 
 
+def test_symbolic_constant_inputs_stay_exact():
+    # The IR allows exact symbolic constants as strings (e.g. sqrt(2), pi).
+    d = _derive({"kind": "linear_direct", "slope": "sqrt(2)", "intercept": "pi"})
+    assert d.expr == sp.sqrt(2) * x + sp.pi
+    assert not d.expr.atoms(sp.Float)  # stays exact, no float pollution
+
+
+def test_bare_letter_constant_is_rejected_as_a_variable():
+    # "e" (and other bare letters) parse to a symbol, not a number -> honest refusal.
+    with pytest.raises(DerivationError):
+        _derive({"kind": "linear_direct", "slope": "e", "intercept": 0})
+
+
 # --- Function families ------------------------------------------------------ #
 
 
