@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { ApiKeyScreen } from './components/ApiKeyScreen'
 import { Chat } from './components/Chat'
-import { FeedbackLink } from './components/FeedbackLink'
+import { FeedbackScreen } from './components/FeedbackScreen'
 import { clearApiKey, getApiKey, getLlmSummaries, setLlmSummaries } from './lib/storage'
 
 const REPLY_TOOLTIP =
@@ -15,6 +15,7 @@ export default function App() {
   const [apiKey, setKey] = useState<string | null>(() => getApiKey())
   const [aiResponses, setAiResponses] = useState(() => getLlmSummaries())
   const [infoOpen, setInfoOpen] = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
   const infoRef = useRef<HTMLSpanElement>(null)
 
   // Close the info popover on an outside click or Escape.
@@ -34,6 +35,11 @@ export default function App() {
     }
   }, [infoOpen])
 
+  // Reachable from both the key screen and the chat.
+  if (showFeedback) {
+    return <FeedbackScreen onBack={() => setShowFeedback(false)} />
+  }
+
   if (!apiKey) {
     // Pull the AI-responses choice forward when entering the chat.
     return (
@@ -42,6 +48,7 @@ export default function App() {
           setAiResponses(getLlmSummaries())
           setKey(k)
         }}
+        onFeedback={() => setShowFeedback(true)}
       />
     )
   }
@@ -91,7 +98,9 @@ export default function App() {
             </button>
           </span>
           <div className="header-actions">
-            <FeedbackLink className="link-button" />
+            <button type="button" className="link-button" onClick={() => setShowFeedback(true)}>
+              Send feedback
+            </button>
             <button type="button" className="link-button" onClick={logOut}>
               Log out
             </button>

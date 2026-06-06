@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { getLlmSummaries, setApiKey, setLlmSummaries } from '../lib/storage'
 import { BroughtBy } from './BroughtBy'
-import { FeedbackLink } from './FeedbackLink'
 
 // All planned providers are shown so the model-agnostic direction is visible;
 // only Anthropic is selectable in v1. The rest are "Coming soon".
@@ -12,7 +11,13 @@ const PROVIDERS = [
   { id: 'gemini', label: 'Google Gemini', available: false },
 ] as const
 
-export function ApiKeyScreen({ onSubmit }: { onSubmit: (key: string) => void }) {
+export function ApiKeyScreen({
+  onSubmit,
+  onFeedback,
+}: {
+  onSubmit: (key: string) => void
+  onFeedback: () => void
+}) {
   const [key, setKey] = useState('')
   const [provider, setProvider] = useState('anthropic')
   const [aiResponses, setAiResponses] = useState(() => getLlmSummaries())
@@ -88,7 +93,9 @@ export function ApiKeyScreen({ onSubmit }: { onSubmit: (key: string) => void }) 
       </form>
 
       <p className="key-feedback">
-        <FeedbackLink />
+        <button type="button" className="link-button" onClick={onFeedback}>
+          Send feedback
+        </button>
       </p>
 
       <BroughtBy className="key-screen-credit" />

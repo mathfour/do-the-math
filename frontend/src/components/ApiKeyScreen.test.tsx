@@ -10,14 +10,15 @@ afterEach(() => {
 })
 
 describe('ApiKeyScreen', () => {
-  it('offers a feedback link', () => {
-    render(<ApiKeyScreen onSubmit={vi.fn()} />)
-    const link = screen.getByRole('link', { name: /send feedback/i })
-    expect(link).toHaveAttribute('href', expect.stringContaining('/issues/new'))
+  it('triggers feedback when "Send feedback" is clicked', async () => {
+    const onFeedback = vi.fn()
+    render(<ApiKeyScreen onSubmit={vi.fn()} onFeedback={onFeedback} />)
+    await userEvent.click(screen.getByRole('button', { name: /send feedback/i }))
+    expect(onFeedback).toHaveBeenCalled()
   })
 
   it('lists all planned providers with only Anthropic selectable', () => {
-    render(<ApiKeyScreen onSubmit={vi.fn()} />)
+    render(<ApiKeyScreen onSubmit={vi.fn()} onFeedback={vi.fn()} />)
 
     // Order matches the PROVIDERS list: Anthropic (active), then three disabled.
     const [anthropic, ...rest] = screen.getAllByRole('radio')
@@ -33,7 +34,7 @@ describe('ApiKeyScreen', () => {
 
   it('captures the key, stores it locally, and reports it up', async () => {
     const onSubmit = vi.fn()
-    render(<ApiKeyScreen onSubmit={onSubmit} />)
+    render(<ApiKeyScreen onSubmit={onSubmit} onFeedback={vi.fn()} />)
 
     await userEvent.type(screen.getByLabelText(/anthropic api key/i), 'sk-ant-xyz')
     await userEvent.click(screen.getByRole('button', { name: /start graphing/i }))
@@ -43,12 +44,12 @@ describe('ApiKeyScreen', () => {
   })
 
   it('disables submit until a key is entered', () => {
-    render(<ApiKeyScreen onSubmit={vi.fn()} />)
+    render(<ApiKeyScreen onSubmit={vi.fn()} onFeedback={vi.fn()} />)
     expect(screen.getByRole('button', { name: /start graphing/i })).toBeDisabled()
   })
 
   it('persists the AI-responses choice (off by default)', async () => {
-    render(<ApiKeyScreen onSubmit={vi.fn()} />)
+    render(<ApiKeyScreen onSubmit={vi.fn()} onFeedback={vi.fn()} />)
     const checkbox = screen.getByRole('checkbox', { name: /ai-written replies/i })
     expect(checkbox).not.toBeChecked()
 

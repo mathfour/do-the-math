@@ -56,7 +56,7 @@ async function enterKeyAndOpenChat(page: Page) {
 
 async function send(page: Page, text: string) {
   await page.getByLabel(/describe a graph/i).fill(text)
-  await page.getByRole('button', { name: /send/i }).click()
+  await page.getByRole('button', { name: 'Send', exact: true }).click()
 }
 
 test('happy path: key screen -> request -> graph + reasoning panel', async ({ page }) => {

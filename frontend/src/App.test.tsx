@@ -65,13 +65,19 @@ describe('App key gate', () => {
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
 
-  it('offers a feedback link in the header', () => {
+  it('opens the branded feedback screen from the header, then returns', async () => {
     localStorage.setItem(KEY, 'sk-ant-xyz')
     render(<App />)
-    const link = screen.getByRole('link', { name: /send feedback/i })
-    expect(link).toHaveAttribute(
+
+    await userEvent.click(screen.getByRole('button', { name: /send feedback/i }))
+    // Both options are offered on the branded screen.
+    expect(screen.getByRole('link', { name: /github issue/i })).toHaveAttribute(
       'href',
       expect.stringContaining('github.com/mathfour/do-the-math/issues/new'),
     )
+    expect(screen.getByText('mathfour.com@gmail.com')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /back/i }))
+    expect(screen.getByLabelText(/describe a graph/i)).toBeInTheDocument()
   })
 })
