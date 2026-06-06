@@ -47,6 +47,17 @@
   gap: 4px;
 }
 
+.header-actions {
+  display: flex;
+  gap: 14px;
+}
+
+.key-feedback {
+  text-align: center;
+  font-size: 0.85rem;
+  margin: 16px 0 0;
+}
+
 .ai-status {
   display: inline-flex;
   align-items: baseline;

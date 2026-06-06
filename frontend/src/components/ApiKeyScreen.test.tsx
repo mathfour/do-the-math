@@ -10,6 +10,12 @@ afterEach(() => {
 })
 
 describe('ApiKeyScreen', () => {
+  it('offers a feedback link', () => {
+    render(<ApiKeyScreen onSubmit={vi.fn()} />)
+    const link = screen.getByRole('link', { name: /send feedback/i })
+    expect(link).toHaveAttribute('href', expect.stringContaining('/issues/new'))
+  })
+
   it('lists all planned providers with only Anthropic selectable', () => {
     render(<ApiKeyScreen onSubmit={vi.fn()} />)
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { getLlmSummaries, setApiKey, setLlmSummaries } from '../lib/storage'
 import { BroughtBy } from './BroughtBy'
+import { FeedbackLink } from './FeedbackLink'
 
 // All planned providers are shown so the model-agnostic direction is visible;
 // only Anthropic is selectable in v1. The rest are "Coming soon".
@@ -85,6 +86,10 @@ export function ApiKeyScreen({ onSubmit }: { onSubmit: (key: string) => void }) 
           Your key is stored in this browser and sent only to Anthropic via the local backend.
         </p>
       </form>
+
+      <p className="key-feedback">
+        <FeedbackLink />
+      </p>
 
       <BroughtBy className="key-screen-credit" />
     </div>

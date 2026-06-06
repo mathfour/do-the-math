@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { ApiKeyScreen } from './components/ApiKeyScreen'
 import { Chat } from './components/Chat'
+import { FeedbackLink } from './components/FeedbackLink'
 import { clearApiKey, getApiKey, getLlmSummaries, setLlmSummaries } from './lib/storage'
 
 const REPLY_TOOLTIP =
@@ -89,9 +90,12 @@ export default function App() {
               {aiResponses ? 'Use standard' : 'Use AI-written'}
             </button>
           </span>
-          <button type="button" className="link-button" onClick={logOut}>
-            Log out
-          </button>
+          <div className="header-actions">
+            <FeedbackLink className="link-button" />
+            <button type="button" className="link-button" onClick={logOut}>
+              Log out
+            </button>
+          </div>
         </div>
       </header>
       <Chat apiKey={apiKey} />

@@ -64,4 +64,14 @@ describe('App key gate', () => {
     await userEvent.click(info)
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
+
+  it('offers a feedback link in the header', () => {
+    localStorage.setItem(KEY, 'sk-ant-xyz')
+    render(<App />)
+    const link = screen.getByRole('link', { name: /send feedback/i })
+    expect(link).toHaveAttribute(
+      'href',
+      expect.stringContaining('github.com/mathfour/do-the-math/issues/new'),
+    )
+  })
 })
