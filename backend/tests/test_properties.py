@@ -14,11 +14,13 @@ input, not just the hand-picked examples in the other suites:
 
 import math
 
+import pytest
 import sympy as sp
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
 from app.do_the_math.describe import _num_turning_points
+from app.do_the_math.errors import DerivationError, OutOfScopeError
 from app.do_the_math.graph_renderer import render
 from app.do_the_math.ir import IntentWrapper
 from app.do_the_math.math_engine import derive, x
@@ -194,3 +196,47 @@ def test_rendered_log_is_json_safe(base, coefficient, inner_coeff, h_shift, vert
         num_points=200,
     )
     _assert_json_safe(figure)
+
+
+# --------------------------------------------------------------------------- #
+# 5. Honest refusal — degenerate inputs always raise, never a wrong graph.
+#    And every successful derivation is a real function of x alone.
+# --------------------------------------------------------------------------- #
+
+
+@given(b=ints, c=ints)
+def test_zero_a_quadratic_always_refused(b, c):
+    with pytest.raises(DerivationError):
+        _derive({"kind": "quadratic_standard", "a": 0, "b": b, "c": c})
+    with pytest.raises(DerivationError):
+        _derive({"kind": "quadratic_vertex", "a": 0, "h": b, "k": c})
+
+
+@given(x0=ints, y1=ints, y2=ints)
+def test_vertical_line_always_refused(x0, y1, y2):
+    assume(y1 != y2)  # two distinct points sharing an x = a vertical line
+    with pytest.raises(OutOfScopeError):
+        _derive({"kind": "line_two_points", "point1": [x0, y1], "point2": [x0, y2]})
+
+
+@given(base=st.sampled_from([0, 1, -1, -2, -10]), coefficient=ints, rate=st.integers(-3, 3))
+def test_bad_exponential_base_always_refused(base, coefficient, rate):
+    # base must be positive and != 1.
+    with pytest.raises(DerivationError):
+        _derive(
+            {
+                "kind": "exponential",
+                "base": base,
+                "coefficient": coefficient,
+                "rate": rate,
+                "vertical_shift": 0,
+            }
+        )
+
+
+@settings(deadline=None)
+@given(coeffs=st.lists(ints, min_size=1, max_size=6))
+def test_derived_polynomial_is_a_function_of_x_alone(coeffs):
+    # A successful derivation never smuggles in another variable.
+    d = _derive({"kind": "polynomial", "coefficients": coeffs})
+    assert d.expr.free_symbols <= {x}
