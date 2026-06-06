@@ -19,6 +19,13 @@ def _derive(raw: dict):
 # --- Genuine derivations (the demo narrative) ------------------------------- #
 
 
+def test_identity_function_y_equals_x_derives():
+    # Regression: y = x reduces to the bare Symbol x, which is a Boolean
+    # instance in SymPy — the guard must not mistake it for a relation.
+    assert _derive({"kind": "linear_direct", "slope": 1, "intercept": 0}).equation == "y = x"
+    assert _derive({"kind": "polynomial", "coefficients": [1, 0]}).equation == "y = x"
+
+
 def test_parabola_vertex_direction_up_exact_string():
     # README acceptance criterion.
     d = _derive({"kind": "parabola_vertex_direction", "vertex": [1, 2], "direction": "up"})

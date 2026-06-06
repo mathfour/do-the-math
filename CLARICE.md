@@ -8,6 +8,71 @@ Verdict legend: ✅ approved to proceed · 🟡 approved with follow-ups · 🔴
 
 ---
 
+## Phase 4 / v1 sign-off — local run, help intent, user-controlled summaries
+
+**Verdict: ✅ v1 signed off / shippable.** One thing to eyeball on GitHub (README folds, #1
+below); everything else is green and the architecture invariants hold. (reviewed 2026-06-05, range
+`614f543..3d5a7c9`)
+
+### What I verified (re-run at HEAD)
+- **Backend 85 tests / 92% coverage** (gate 80%); ruff + black clean. **Frontend 17 unit + 4 E2E
+  pass**; tsc/eslint/prettier clean. Working tree clean.
+- **The Phase 3 #1 fix is correct.** `_num_turning_points` now counts sign changes of f′. Probed
+  directly: `x³→0`, `x⁵→0` (inflections), `x⁴→1`, `x³−3x→2`. Regression tests added.
+- **The math-truth invariant still holds end to end.** LLM phrasing is opt-in (per-request
+  `llm_summaries`, server default off), only rephrases SymPy-verified facts, passes the equation
+  through verbatim, and falls back to the deterministic line on any failure. Graph title + reasoning
+  panel equation are always deterministic. The plumbing (main → router → `Request.use_llm_summary` →
+  `_summarize`) is clean, and the UI reads the pref from storage at send time so the toggle takes
+  effect mid-session.
+- **Help intent** is wired correctly: `help` is in the required-field table (so it isn't mistaken for
+  an underspecified graph), `HelpRequest` parses, and `Envelope.help` renders a static capabilities
+  card — no extra model call.
+
+### v1 acceptance (SPEC §10) — met
+- [x] Always English → IR → SymPy → output; SymPy is the source of truth (incl. summary facts).
+- [x] Full slice runs live; parabola vertex+direction and ≥3 phrasings produce correct graphs.
+- [x] Underspecified → clarification; answering completes; out-of-scope → clear, now-friendlier
+      "I can only graph y = f(x)" note instead of jargon.
+- [x] Provider adapter interface w/ Anthropic only; OpenAI/Azure/Gemini absent from code, present as
+      "Coming soon" + roadmap. Agents register; router dispatches via `can_handle`; all output uses
+      the envelope.
+- [x] Demo deliverables refreshed to the current UI (ready-state, graph-result, slice.gif).
+- [x] Fresh clone runs via `run.sh` (one command) + documented steps; first-run key screen lists all
+      four providers; key stored locally, never committed or sent anywhere but Anthropic.
+- [x] Backend + frontend unit + Playwright E2E all pass in CI on push/PR.
+- [~] SPEC §8/§10 "merged via reviewed PR" / "CI blocks merge" remain **WAIVED** (direct-to-`main`,
+      human decision 2026-06-05). My phase-boundary reviews stood in for the PR gate. Mark these
+      waived — not checked — at acceptance, as agreed.
+
+### Follow-ups
+
+1. **🟡 Verify the README install folds render on GitHub (Claude's flagged #4 — real risk).** The
+   ```bash fences are indented **8 spaces, inside nested `<details>` that live within numbered list
+   items**. That specific combination (raw-HTML block inside a list item + a 4+-space-indented fence)
+   is exactly where GitHub's Markdown renderer often shows literal back-ticks or drops the code box,
+   even though there's a blank line after each `<summary>`. I can't confirm from the source alone —
+   **open the pushed README on github.com and look at every fold.** If any fence shows raw ``` or
+   loses its box, the reliable fix is to **de-indent the fences to column 0** (GitHub renders fenced
+   code inside `<details>` fine when the fence isn't indented), or flatten one level of nesting. Pure
+   docs — does not affect the app.
+
+2. **🟢 `help` extends SPEC §3's envelope vocabulary (graph|solution|proof|clarification|error +
+   `help`).** Sensible, documented in NOTES, and backward-compatible (the UI falls through to
+   `explanation` for unknown types). Fine as a deliberate extension — just keep it in the §3 list when
+   NOTES/README are reconciled so the contract stays the single source of truth.
+
+3. **🟢 Nit — `invalid_intent` is treated as a scope reason in the UI.** A malformed-IR error renders
+   under the friendly "I can only graph y = f(x)" header. Reasonable as a catch-all, but semantically
+   it's a "couldn't parse, rephrase" case, not an out-of-scope shape. Leave it or split it — cosmetic.
+
+### Closing note
+This is a clean v1. The thesis the project set out to prove — language in, structured IR, SymPy as
+the sole source of mathematical truth, honest refusals over wrong answers — holds at every layer I
+checked, including the new opt-in LLM phrasing. Nice work across all five phases.
+
+---
+
 ## Phase 3 — Vertical slice complete & demo capture
 
 **Verdict: ✅ approved to proceed to Phase 4 — with one correctness fix I'd like done first

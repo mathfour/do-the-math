@@ -277,7 +277,12 @@ def _natural_domain(expr: sp.Expr) -> sp.Set:
 
 def _guard(expr: sp.Expr) -> None:
     """Reject anything that isn't a real single-variable function of x."""
-    if isinstance(expr, sp.logic.boolalg.Boolean) or expr.is_Relational:
+    # Catch genuine relations/booleans (x > 0, Eq(...), And/Or, True/False) —
+    # but NOT a bare Symbol, which is itself a ``Boolean`` instance in SymPy
+    # (so ``isinstance(x, Boolean)`` is True and would wrongly reject y = x).
+    if expr.is_Relational or isinstance(
+        expr, (sp.logic.boolalg.BooleanFunction, sp.logic.boolalg.BooleanAtom)
+    ):
         raise OutOfScopeError(
             "not_a_function", "That describes a relation, not a function y = f(x)."
         )

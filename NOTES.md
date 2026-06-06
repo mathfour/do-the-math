@@ -37,6 +37,9 @@ Three docs (decided 2026-06-05):
 
 ## Phase status
 
+- **Phase 5 — Hardening (post-v1):** _in progress._
+  - **Property-based tests (Hypothesis)** on the math core (`tests/test_properties.py`): the displayed `equation` always re-parses to the exact derived expr (round-trip, parsed against the engine's real `x`); exact-arithmetic preserved (no stray `Float` for int/rational/exact-float inputs); a degree-n polynomial has 0…n-1 turning points; rendered figures are always JSON-safe (every y finite-or-`None`, never NaN/Inf). Backend now **97 tests / 92%**.
+  - **Bug found & fixed by the round-trip property:** `_guard` rejected `y = x` (and anything reducing to the bare symbol) as "a relation, not a function" — because a bare SymPy `Symbol` *is* a `Boolean` instance, so `isinstance(expr, Boolean)` was a false positive. Fixed to check `is_Relational` / `BooleanFunction` / `BooleanAtom` instead; regression test added (`y = x` derives cleanly).
 - **Phase 4 — Local run & sharing:** _complete — Clarice signed off; **v1 ships**._
   - `./run.sh` (repo root) installs both halves (`uv sync` + `npm install`), starts the backend (port 8000) + frontend, and opens the app in the browser (`vite --open`); Ctrl+C stops both. README "Running locally" documents it + the manual two-terminal alternative. Prereqs: `uv`, Node 20.19+/22.12+.
   - Key entered in the UI (no `.env` needed for a fresh clone). Fresh-clone install + build + tests verified.
