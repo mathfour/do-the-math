@@ -75,7 +75,9 @@ def _is_missing(value) -> bool:
 def check_required(raw: dict) -> ClarificationNeeded | None:
     """Return the first missing-required-field clarification, or None if complete."""
     kind = raw.get("kind")
-    if kind not in REQUIRED:
+    # Guard `isinstance(str)` first: a non-string kind (e.g. a list) is both
+    # invalid and unhashable, so `kind not in REQUIRED` would raise TypeError.
+    if not isinstance(kind, str) or kind not in REQUIRED:
         return ClarificationNeeded(
             "kind", "What kind of function would you like to graph (e.g. a line or a parabola)?"
         )

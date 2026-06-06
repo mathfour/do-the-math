@@ -66,6 +66,26 @@ def test_identity_line_y_equals_x_derives_and_renders(fake_adapter):
     assert ys and any(v is not None for v in ys)  # actually rendered points
 
 
+@pytest.mark.parametrize(
+    "bad_ir",
+    [
+        {},  # nothing at all
+        {"kind": "banana"},  # unknown kind
+        {"kind": ["not", "a", "string"]},  # non-string (unhashable) kind
+        {"kind": "linear_direct", "slope": "abc", "intercept": 0},  # variable in a number
+        {"kind": "polynomial", "coefficients": []},  # empty coefficients
+        {"kind": "trig", "func": None},  # null required field
+        {"kind": "linear_direct", "slope": 1, "intercept": 0, "bogus": 9},  # extra field
+    ],
+)
+def test_malformed_ir_degrades_gracefully(fake_adapter, bad_ir):
+    # Whatever the model emits, the API returns 200 with a valid envelope — never a 500.
+    fake_adapter.update(bad_ir)
+    resp = client.post("/chat", json={"message": "x"}, headers={"X-Anthropic-Key": "sk-test"})
+    assert resp.status_code == 200
+    assert resp.json()["type"] in {"clarification", "error", "graph"}
+
+
 def test_llm_summaries_flag_is_honored(fake_adapter):
     fake_adapter.update({"kind": "trig", "func": "sin"})
     # Default (omitted) -> off -> deterministic written line.

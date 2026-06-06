@@ -40,3 +40,10 @@ def test_empty_list_field_counts_as_missing():
 def test_optional_fields_do_not_trigger_clarification():
     # trig only requires func; amplitude/frequency/etc. are optional.
     assert check_required({"kind": "trig", "func": "sin"}) is None
+
+
+def test_non_string_kind_does_not_crash():
+    # A non-string (unhashable) kind must not raise on the `in REQUIRED` check.
+    assert check_required({"kind": ["linear_direct"]}).field == "kind"
+    assert check_required({"kind": 7}).field == "kind"
+    assert check_required({"kind": {"x": 1}}).field == "kind"

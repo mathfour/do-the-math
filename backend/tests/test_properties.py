@@ -19,6 +19,8 @@ import sympy as sp
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
+from app.do_the_math.agents import GraphingAgent, Request
+from app.do_the_math.clarification import REQUIRED
 from app.do_the_math.describe import _num_turning_points
 from app.do_the_math.errors import DerivationError, OutOfScopeError
 from app.do_the_math.graph_renderer import render
@@ -240,3 +242,30 @@ def test_derived_polynomial_is_a_function_of_x_alone(coeffs):
     # A successful derivation never smuggles in another variable.
     d = _derive({"kind": "polynomial", "coefficients": coeffs})
     assert d.expr.free_symbols <= {x}
+
+
+# --------------------------------------------------------------------------- #
+# 6. Robustness — ANY raw IR yields a valid envelope, never an exception.
+#    (Malformed model output must degrade to a clarification/error, not crash.)
+# --------------------------------------------------------------------------- #
+
+# Arbitrary JSON-ish junk a (mis)behaving model might emit for a field or kind.
+_junk = st.one_of(
+    st.none(),
+    st.booleans(),
+    st.integers(-5, 5),
+    st.text(max_size=6),
+    st.lists(st.integers(-3, 3), max_size=3),
+    st.dictionaries(st.text(max_size=3), st.integers(-3, 3), max_size=3),
+)
+
+
+@settings(deadline=None, max_examples=200)
+@given(
+    kind=st.one_of(st.sampled_from(sorted(REQUIRED)), st.text(max_size=8), _junk),
+    extra=st.dictionaries(st.text(min_size=1, max_size=6), _junk, max_size=4),
+)
+def test_agent_returns_a_valid_envelope_for_any_intent(kind, extra):
+    raw = {**extra, "kind": kind}
+    env = GraphingAgent().execute(Request(message="anything", raw_intent=raw))
+    assert env.type in {"graph", "clarification", "error", "help"}
