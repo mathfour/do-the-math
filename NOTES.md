@@ -37,7 +37,7 @@ Three docs (decided 2026-06-05):
 
 ## Phase status
 
-- **Phase 4 — Local run & sharing:** _in progress._
+- **Phase 4 — Local run & sharing:** _complete — Clarice signed off; **v1 ships**._
   - `./run.sh` (repo root) installs both halves (`uv sync` + `npm install`), starts the backend (port 8000) + frontend, and opens the app in the browser (`vite --open`); Ctrl+C stops both. README "Running locally" documents it + the manual two-terminal alternative. Prereqs: `uv`, Node 20.19+/22.12+.
   - Key entered in the UI (no `.env` needed for a fresh clone). Fresh-clone install + build + tests verified.
 - **Phase 3 — Vertical slice complete & demo capture:** _complete (Clarice-approved → Phase 4)._
@@ -94,6 +94,10 @@ Three docs (decided 2026-06-05):
 
 ## Clarice review log
 
+- **Phase 4 / v1 — SIGNED OFF (ships).** All five phases hold together; thesis intact end to end (language → IR → SymPy as sole math truth; honest refusals), and it survived the opt-in LLM phrasing (facts from SymPy, equation verbatim, deterministic fallback, off by default). Turning-point fix re-verified (x³/x⁵→0, x⁴→1, x³−3x→2). Three follow-ups:
+  1. **README install folds render on GitHub** → **verified GOOD** by fetching the rendered HTML from the GitHub API: every install command (incl. the deepest nested Homebrew one) renders as a real code box, zero literal backticks. No change needed.
+  2. **`help` envelope type** → added to the README contract example (`71777a0`) so the living vocabulary stays authoritative; SPEC.md stays frozen, deviation recorded here.
+  3. **Cosmetic:** `invalid_intent` ("please rephrase") renders under the scope header — fine as a catch-all; left as-is per her guidance (split only if we want the wording to match).
 - **Phase 3 — APPROVED** (→ Phase 4). Demo-ready: live happy path + mocked E2E on all three paths, good demo artifacts, math-truth boundary intact. Both Phase 2 follow-ups landed.
   1. **Turning-point count** → fixed: count sign changes of f′ (odd-multiplicity roots), not distinct roots; `x**3`/`x**5` → 0, `x**4` → 1; regression tests added.
   2. **Broadened LLM role** → recorded as a decision above; at acceptance phrase §10 as "the LLM is never the source of mathematical truth"; summaries stay off for the demo.
