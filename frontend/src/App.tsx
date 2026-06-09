@@ -18,11 +18,16 @@ export default function App() {
   const [showFeedback, setShowFeedback] = useState(false)
   const infoRef = useRef<HTMLSpanElement>(null)
   const feedbackTriggerRef = useRef<HTMLButtonElement>(null)
+  const keyFeedbackTriggerRef = useRef<HTMLButtonElement>(null)
   const wasFeedbackOpen = useRef(false)
 
   // Return focus to the "Send feedback" trigger when the feedback view closes.
+  // Only one of the two screens (chat header / key screen) is mounted at a time,
+  // so whichever ref is populated is the trigger that opened the overlay.
   useEffect(() => {
-    if (wasFeedbackOpen.current && !showFeedback) feedbackTriggerRef.current?.focus()
+    if (wasFeedbackOpen.current && !showFeedback) {
+      ;(feedbackTriggerRef.current ?? keyFeedbackTriggerRef.current)?.focus()
+    }
     wasFeedbackOpen.current = showFeedback
   }, [showFeedback])
 
@@ -43,7 +48,8 @@ export default function App() {
     }
   }, [infoOpen])
 
-  // Reachable from both the key screen and the chat.
+  // Reachable from both the key screen and the chat; close returns focus to
+  // whichever "Send feedback" trigger opened it (see the focus-return effect).
   if (showFeedback) {
     return <FeedbackScreen onBack={() => setShowFeedback(false)} />
   }
@@ -57,6 +63,7 @@ export default function App() {
           setKey(k)
         }}
         onFeedback={() => setShowFeedback(true)}
+        feedbackButtonRef={keyFeedbackTriggerRef}
       />
     )
   }

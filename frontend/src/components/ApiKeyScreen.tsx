@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type RefObject } from 'react'
 import { getLlmSummaries, setApiKey, setLlmSummaries } from '../lib/storage'
 import { BroughtBy } from './BroughtBy'
 
@@ -14,9 +14,11 @@ const PROVIDERS = [
 export function ApiKeyScreen({
   onSubmit,
   onFeedback,
+  feedbackButtonRef,
 }: {
   onSubmit: (key: string) => void
   onFeedback: () => void
+  feedbackButtonRef?: RefObject<HTMLButtonElement | null>
 }) {
   const [key, setKey] = useState('')
   const [provider, setProvider] = useState('anthropic')
@@ -93,7 +95,7 @@ export function ApiKeyScreen({
       </form>
 
       <p className="key-feedback">
-        <button type="button" className="link-button" onClick={onFeedback}>
+        <button ref={feedbackButtonRef} type="button" className="link-button" onClick={onFeedback}>
           Send feedback
         </button>
       </p>

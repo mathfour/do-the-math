@@ -84,4 +84,17 @@ describe('App key gate', () => {
     // Focus returns to the trigger.
     expect(screen.getByRole('button', { name: /send feedback/i })).toHaveFocus()
   })
+
+  it('returns focus to the key-screen feedback trigger after closing (splash path)', async () => {
+    // No key stored → the splash/key screen is the trigger's home.
+    render(<App />)
+
+    await userEvent.click(screen.getByRole('button', { name: /send feedback/i }))
+    expect(screen.getByRole('heading', { name: /do the math/i })).toHaveFocus()
+
+    await userEvent.click(screen.getByRole('button', { name: /back/i }))
+    // Back on the key screen, focus returns to its feedback trigger (not <body>).
+    expect(screen.getByLabelText(/anthropic api key/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /send feedback/i })).toHaveFocus()
+  })
 })
